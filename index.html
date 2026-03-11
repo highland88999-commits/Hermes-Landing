@@ -8,166 +8,162 @@
     <style>
         :root {
             --hologram-blue: rgba(0, 243, 255, 0.6);
-            --bloom-glow: rgba(0, 0, 0, 0.8);
-            --text-glow: 0 0 15px rgba(255, 255, 255, 0.7);
+            --bloom-glow: rgba(0, 0, 0, 0.9);
+            --text-glow: 0 0 15px rgba(0, 243, 255, 0.5);
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             overflow: hidden;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: #000;
         }
 
         /* Fullscreen Video Background */
         #video-background {
             position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
+            right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
             z-index: -1;
-            filter: brightness(0.6) contrast(1.2);
+            filter: brightness(0.5) contrast(1.1);
+            transition: opacity 0.5s ease;
         }
 
-        /* Overlay Interface */
+        /* Digital Rain Canvas */
+        #rain-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
         .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: relative;
+            z-index: 10;
+            width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+        header { text-align: center; margin-bottom: 60px; pointer-events: none; }
+        h1 { color: #fff; letter-spacing: 10px; font-weight: 200; text-shadow: var(--text-glow); margin: 0; }
+        p { color: var(--hologram-blue); letter-spacing: 5px; font-size: 0.8rem; text-transform: uppercase; }
 
-        h1 {
-            color: #fff;
-            letter-spacing: 8px;
-            font-weight: 200;
-            text-shadow: var(--text-glow);
-            margin: 0;
-        }
-
-        p {
-            color: var(--hologram-blue);
-            letter-spacing: 4px;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            text-transform: uppercase;
-        }
-
-        /* Black Bloom Holographic Icons */
-        .icon-container {
-            display: flex;
-            gap: 40px;
-        }
+        .icon-container { display: flex; gap: 50px; }
 
         .hologram-card {
-            width: 180px;
-            height: 180px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.05);
-            position: relative;
-        }
-
-        .hologram-card::before {
-            content: '';
-            position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
-            background: linear-gradient(45deg, transparent, rgba(0, 243, 255, 0.3), transparent);
-            border-radius: 22px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
+            width: 200px; height: 220px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 15px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0,0,0,1);
         }
 
         .hologram-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            border-color: var(--hologram-blue);
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);
+            border-color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
         }
 
-        .hologram-card:hover::before {
-            opacity: 1;
-        }
-
-        /* Hoodie + Lightning Bolt Icon */
-        .hoodie-icon {
-            position: relative;
-            font-size: 4rem;
-            color: #fff;
-            filter: drop-shadow(0 0 10px var(--hologram-blue));
-        }
-
+        /* Icon Styling */
+        .symbol-wrapper { position: relative; font-size: 4.5rem; color: #fff; }
         .bolt-overlay {
-            position: absolute;
-            top: 55%;
-            left: 50%;
+            position: absolute; top: 55%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 2.2rem;
-            color: var(--hologram-blue);
-            text-shadow: 0 0 20px #00f3ff;
+            font-size: 2.5rem; color: #00f3ff;
+            text-shadow: 0 0 15px #00f3ff;
         }
 
-        .label {
-            margin-top: 15px;
-            color: #fff;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            opacity: 0.7;
-        }
+        .label { margin-top: 20px; color: #fff; font-size: 0.75rem; letter-spacing: 3px; opacity: 0.8; }
     </style>
 </head>
-<body>
+<body onclick="playVideo()">
 
-    <video autoplay muted loop id="video-background">
+    <video muted loop id="video-background" preload="auto">
         <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
     </video>
+
+    <canvas id="rain-canvas"></canvas>
 
     <div class="overlay">
         <header>
             <h1>HERMES LANDING</h1>
-            <h1>SHOP CLOTHING</h1>
             <p>Select your brand below</p>
         </header>
 
         <div class="icon-container">
-            <div class="hologram-card">
-                <div class="hoodie-icon">
-                    <i class="fa-solid fa-shirt"></i> <div class="bolt-overlay">
-                        <i class="fa-solid fa-bolt"></i>
-                    </div>
+            <a href="https://olympus-lac.vercel.app/" class="hologram-card">
+                <div class="symbol-wrapper">
+                    <i class="fa-solid fa-vest"></i>
+                    <div class="bolt-overlay"><i class="fa-solid fa-bolt"></i></div>
                 </div>
-                <div class="label">ELITE LINE</div>
-            </div>
+                <div class="label">OLYMPUS</div>
+            </a>
 
-            <div class="hologram-card" style="opacity: 0.5;">
-                <i class="fa-solid fa-plus" style="font-size: 2rem; color: #fff;"></i>
-                <div class="label">COMING SOON</div>
-            </div>
+            <a href="https://missacccom.pxf.io/oNq1Po" class="hologram-card">
+                <div class="symbol-wrapper">
+                    <i class="fa-solid fa-person-dress"></i>
+                </div>
+                <div class="label">BRIDAL EXCLUSIVE</div>
+            </a>
         </div>
     </div>
 
+    <script>
+        // 1. Instant Video Trigger
+        const video = document.getElementById('video-background');
+        function playVideo() {
+            if (video.paused) {
+                video.play().catch(e => console.log("User interaction required for video"));
+            }
+        }
+
+        // 2. Clothing Digital Rain
+        const canvas = document.getElementById('rain-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const clothingIcons = ['👕', '👗', '🧥', '👖', '👟', '⚡'];
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawRain() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00f3ff';
+            ctx.font = fontSize + 'px Arial';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = clothingIcons[Math.floor(Math.random() * clothingIcons.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawRain, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
