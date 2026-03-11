@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HERMES LANDING - SHOP CLOTHING</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --hologram-blue: rgba(0, 243, 255, 0.6);
+            --bloom-glow: rgba(0, 0, 0, 0.8);
+            --text-glow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #000;
+        }
+
+        /* Fullscreen Video Background */
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(0.6) contrast(1.2);
+        }
+
+        /* Overlay Interface */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            color: #fff;
+            letter-spacing: 8px;
+            font-weight: 200;
+            text-shadow: var(--text-glow);
+            margin: 0;
+        }
+
+        p {
+            color: var(--hologram-blue);
+            letter-spacing: 4px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Black Bloom Holographic Icons */
+        .icon-container {
+            display: flex;
+            gap: 40px;
+        }
+
+        .hologram-card {
+            width: 180px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255,255,255,0.05);
+            position: relative;
+        }
+
+        .hologram-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(0, 243, 255, 0.3), transparent);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .hologram-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--hologram-blue);
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.2);
+        }
+
+        .hologram-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Hoodie + Lightning Bolt Icon */
+        .hoodie-icon {
+            position: relative;
+            font-size: 4rem;
+            color: #fff;
+            filter: drop-shadow(0 0 10px var(--hologram-blue));
+        }
+
+        .bolt-overlay {
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            color: var(--hologram-blue);
+            text-shadow: 0 0 20px #00f3ff;
+        }
+
+        .label {
+            margin-top: 15px;
+            color: #fff;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop id="video-background">
+        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+    </video>
+
+    <div class="overlay">
+        <header>
+            <h1>HERMES LANDING</h1>
+            <h1>SHOP CLOTHING</h1>
+            <p>Select your brand below</p>
+        </header>
+
+        <div class="icon-container">
+            <div class="hologram-card">
+                <div class="hoodie-icon">
+                    <i class="fa-solid fa-shirt"></i> <div class="bolt-overlay">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                </div>
+                <div class="label">ELITE LINE</div>
+            </div>
+
+            <div class="hologram-card" style="opacity: 0.5;">
+                <i class="fa-solid fa-plus" style="font-size: 2rem; color: #fff;"></i>
+                <div class="label">COMING SOON</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
