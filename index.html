@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --hologram-blue: rgba(0, 243, 255, 0.6);
-            --bloom-glow: rgba(0, 0, 0, 0.9);
-            --text-glow: 0 0 15px rgba(0, 243, 255, 0.5);
+            --hologram-blue: #00f3ff;
+            --black-bloom: rgba(0, 0, 0, 0.85);
         }
 
         body, html {
@@ -20,80 +19,112 @@
             background-color: #000;
         }
 
-        /* Fullscreen Video Background */
-        #video-background {
+        /* Background Video */
+        #bg-video {
             position: fixed;
-            right: 0; bottom: 0;
+            top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
-            z-index: -1;
-            filter: brightness(0.5) contrast(1.1);
-            transition: opacity 0.5s ease;
-        }
-
-        /* Digital Rain Canvas */
-        #rain-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.4;
+            width: auto; height: auto;
+            transform: translate(-50%, -50%);
+            z-index: -2;
+            filter: brightness(0.4) grayscale(0.5);
         }
 
         .overlay {
             position: relative;
             z-index: 10;
             width: 100%; height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
-        }
-
-        header { text-align: center; margin-bottom: 60px; pointer-events: none; }
-        h1 { color: #fff; letter-spacing: 10px; font-weight: 200; text-shadow: var(--text-glow); margin: 0; }
-        p { color: var(--hologram-blue); letter-spacing: 5px; font-size: 0.8rem; text-transform: uppercase; }
-
-        .icon-container { display: flex; gap: 50px; }
-
-        .hologram-card {
-            width: 200px; height: 220px;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 15px;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            cursor: pointer; text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(0,0,0,1);
+            background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%);
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        .hologram-card:hover {
-            border-color: #fff;
-            transform: translateY(-5px);
-            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { color: #fff; letter-spacing: clamp(4px, 2vw, 10px); font-size: clamp(1.5rem, 5vw, 2.5rem); margin: 0; }
+        p { color: var(--hologram-blue); letter-spacing: 3px; font-size: 0.8rem; text-transform: uppercase; margin-top: 10px; }
+
+        .icon-container { 
+            display: flex; 
+            gap: 30px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
         }
 
-        /* Icon Styling */
-        .symbol-wrapper { position: relative; font-size: 4.5rem; color: #fff; }
-        .bolt-overlay {
-            position: absolute; top: 55%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5rem; color: #00f3ff;
-            text-shadow: 0 0 15px #00f3ff;
+        .hologram-card {
+            width: clamp(150px, 40vw, 220px);
+            height: clamp(180px, 45vw, 250px);
+            background: var(--black-bloom);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-decoration: none;
+            transition: 0.4s;
+            overflow: hidden;
+            position: relative;
         }
 
-        .label { margin-top: 20px; color: #fff; font-size: 0.75rem; letter-spacing: 3px; opacity: 0.8; }
+        /* Video-in-Icon Logic */
+        .video-mask {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 80%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .masked-video {
+            position: absolute;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            /* This clips the video to the icon shape */
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            opacity: 0.7;
+            transition: 0.4s;
+        }
+
+        /* Specific Masks */
+        .olympus-mask { 
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M212.7 11c3.9-7.1 11.4-11.4 19.3-11.4s15.4 4.3 19.3 11.4l192 352c3.9 7.1 3.9 15.6 0 22.6s-11.4 11.4-19.3 11.4H240v104c0 13.3-10.7 24-24 24s-24-10.7-24-24V397.4l-11.3 20.8c-3.9 7.1-11.4 11.4-19.3 11.4H24.4c-7.9 0-15.4-4.3-19.3-11.4s-3.9-15.6 0-22.6L212.7 11z"/></svg>'); 
+        }
+
+        .bridal-mask {
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 512c35.3 0 64-28.7 64-64H160c0 35.3 28.7 64 64 64zM32 416H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32z"/></svg>');
+        }
+
+        .hologram-card:hover .masked-video {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .label {
+            position: absolute;
+            bottom: 20px;
+            color: #fff;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #000;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .icon-container { gap: 15px; }
+            .hologram-card { width: 140px; height: 180px; }
+        }
     </style>
 </head>
-<body onclick="playVideo()">
+<body onclick="document.querySelectorAll('video').forEach(v => v.play())">
 
-    <video muted loop id="video-background" preload="auto">
+    <video muted loop playsinline id="bg-video">
         <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
     </video>
-
-    <canvas id="rain-canvas"></canvas>
 
     <div class="overlay">
         <header>
@@ -103,67 +134,24 @@
 
         <div class="icon-container">
             <a href="https://olympus-lac.vercel.app/" class="hologram-card">
-                <div class="symbol-wrapper">
-                    <i class="fa-solid fa-vest"></i>
-                    <div class="bolt-overlay"><i class="fa-solid fa-bolt"></i></div>
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video olympus-mask">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
                 </div>
                 <div class="label">OLYMPUS</div>
             </a>
 
             <a href="https://missacccom.pxf.io/oNq1Po" class="hologram-card">
-                <div class="symbol-wrapper">
-                    <i class="fa-solid fa-person-dress"></i>
+                <div class="video-mask">
+                    <video muted loop playsinline class="masked-video bridal-mask">
+                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+                    </video>
                 </div>
-                <div class="label">BRIDAL EXCLUSIVE</div>
+                <div class="label">BRIDAL</div>
             </a>
         </div>
     </div>
 
-    <script>
-        // 1. Instant Video Trigger
-        const video = document.getElementById('video-background');
-        function playVideo() {
-            if (video.paused) {
-                video.play().catch(e => console.log("User interaction required for video"));
-            }
-        }
-
-        // 2. Clothing Digital Rain
-        const canvas = document.getElementById('rain-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const clothingIcons = ['👕', '👗', '🧥', '👖', '👟', '⚡'];
-        const fontSize = 16;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-
-        function drawRain() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#00f3ff';
-            ctx.font = fontSize + 'px Arial';
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = clothingIcons[Math.floor(Math.random() * clothingIcons.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                drops[i]++;
-            }
-        }
-
-        setInterval(drawRain, 50);
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    </script>
 </body>
 </html>
