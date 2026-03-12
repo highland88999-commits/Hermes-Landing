@@ -3,210 +3,459 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HERMES LANDING - SHOP CLOTHING</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>THE ROSE GARDEN — ONLINE SHOPPING MALL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --hologram-blue: #00f3ff;
             --black-bloom: rgba(0, 0, 0, 0.85);
+            --glow: 0 0 30px rgba(0, 243, 255, 0.4);
         }
 
         body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #000;
-            user-select: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            overflow-y: auto; /* ALLOW SCROLLING AS REQUESTED */
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            scroll-behavior: smooth;
         }
 
         /* Fullscreen Video Background */
         #bg-video {
             position: fixed;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
             transform: translate(-50%, -50%);
             z-index: -2;
-            filter: brightness(0.4) grayscale(0.3);
+            filter: brightness(0.45) grayscale(0.25);
+            object-fit: cover;
         }
 
         /* Digital Rain Canvas */
         #rain-canvas {
             position: fixed;
-            top: 0; left: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
             pointer-events: none;
-            opacity: 0.5;
+            opacity: 0.45;
         }
 
         .overlay {
             position: relative;
             z-index: 10;
-            width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 60px 20px 120px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        header { text-align: center; margin-bottom: 50px; }
-        h1 { color: #fff; letter-spacing: clamp(4px, 2vw, 10px); text-transform: uppercase; margin: 0; text-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
-        p { color: var(--hologram-blue); letter-spacing: 5px; font-size: 0.8rem; text-transform: uppercase; margin-top: 10px; }
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
 
-        /* 3-Column Responsive Grid */
-        .icon-container { 
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            letter-spacing: 12px;
+            text-transform: uppercase;
+            margin: 0;
+            text-shadow: var(--glow);
+            color: #fff;
+        }
+
+        .subtext {
+            color: var(--hologram-blue);
+            font-size: 1.1rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 12px;
+            opacity: 0.95;
+        }
+
+        /* Category Sections */
+        section {
+            width: 100%;
+            margin-bottom: 100px;
+        }
+
+        section h2 {
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--hologram-blue);
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+
+        /* Responsive 3-Column Grid (auto rows as needed) */
+        .icon-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            max-width: 900px;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 28px;
             width: 100%;
         }
 
         .hologram-card {
-            aspect-ratio: 4/5;
+            aspect-ratio: 4/4.2;
             background: var(--black-bloom);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 15px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-decoration: none;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
 
         .hologram-card:hover {
+            transform: scale(1.06) translateY(-8px);
             border-color: #fff;
-            transform: scale(1.05);
-            box-shadow: 0 0 40px rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 45px rgba(0, 243, 255, 0.35);
         }
 
-        /* Video Masking */
-        .video-mask {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 75%;
-            display: flex; align-items: center; justify-content: center;
+        .icon-wrapper {
+            font-size: 5.2rem;
+            color: #fff;
+            filter: drop-shadow(0 0 18px var(--hologram-blue));
+            margin-bottom: 18px;
         }
-
-        .masked-video {
-            width: 80%; height: 80%;
-            object-fit: cover;
-            -webkit-mask-size: contain;
-            mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 10px var(--hologram-blue));
-        }
-
-        /* SVG Mask Shapes */
-        .mask-hoodie { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M212.7 11c3.9-7.1 11.4-11.4 19.3-11.4s15.4 4.3 19.3 11.4l192 352c3.9 7.1 3.9 15.6 0 22.6s-11.4 11.4-19.3 11.4H240v104c0 13.3-10.7 24-24 24s-24-10.7-24-24V397.4l-11.3 20.8c-3.9 7.1-11.4 11.4-19.3 11.4H24.4c-7.9 0-15.4-4.3-19.3-11.4s-3.9-15.6 0-22.6L212.7 11z"/></svg>'); }
-        .mask-dress { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 512c35.3 0 64-28.7 64-64H160c0 35.3 28.7 64 64 64zM32 416H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32s14.3 32 32 32z"/></svg>'); }
-        .mask-plus { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>'); }
 
         .label {
-            position: absolute;
-            bottom: 15%;
             color: #fff;
-            font-size: 0.65rem;
-            letter-spacing: 3px;
-            opacity: 0.8;
+            font-size: 0.95rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
             text-align: center;
+            opacity: 0.9;
+            font-weight: 500;
         }
 
-        /* Mobile Fix */
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px 60px;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.6);
+            border-top: 1px solid rgba(0, 243, 255, 0.15);
+        }
+
         @media (max-width: 768px) {
-            .icon-container { grid-template-columns: 1fr; max-width: 200px; }
-            body { overflow-y: auto; }
+            .icon-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            }
+            .hologram-card {
+                aspect-ratio: 4/4;
+            }
         }
     </style>
 </head>
 <body onclick="igniteExperience()">
 
-    <video muted loop playsinline id="bg-video">
+    <!-- Background Video -->
+    <video muted loop playsinline autoplay id="bg-video">
         <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
     </video>
 
+    <!-- Digital Rain -->
     <canvas id="rain-canvas"></canvas>
 
     <div class="overlay">
+
+        <!-- Header -->
         <header>
-            <h1>HERMES LANDING</h1>
-            <p>Select your brand below</p>
+            <h1>THE ROSE GARDEN</h1>
+            <div class="subtext">ONLINE SHOPPING MALL</div>
         </header>
 
-        <div class="icon-container">
-            <a href="https://olympus-lac.vercel.app/" class="hologram-card">
-                <div class="video-mask">
-                    <video muted loop playsinline class="masked-video mask-hoodie">
-                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
-                    </video>
-                </div>
-                <div class="label">OLYMPUS</div>
-            </a>
+        <!-- HATS SECTION -->
+        <section>
+            <h2>HATS &amp; HEADWEAR</h2>
+            <div class="icon-grid">
+                <a href="https://www.villagehatshop.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Village Hat Shop</div>
+                </a>
+                <a href="https://hats.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Hats.com</div>
+                </a>
+                <a href="https://goorin.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Goorin Bros.</div>
+                </a>
+                <a href="https://www.chapelhats.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Chapel Hats</div>
+                </a>
+                <a href="https://www.lids.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Lids</div>
+                </a>
+                <a href="https://www.hatclub.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Hat Club</div>
+                </a>
+                <a href="https://hatheaven.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">Hat Heaven</div>
+                </a>
+                <a href="https://www.neweracap.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <div class="label">New Era Cap</div>
+                </a>
+            </div>
+        </section>
 
-            <a href="https://missacccom.pxf.io/oNq1Po" class="hologram-card">
-                <div class="video-mask">
-                    <video muted loop playsinline class="masked-video mask-dress">
-                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
-                    </video>
-                </div>
-                <div class="label">BRIDAL</div>
-            </a>
+        <!-- T-SHIRTS SECTION -->
+        <section>
+            <h2>T-SHIRTS &amp; GRAPHICS</h2>
+            <div class="icon-grid">
+                <a href="https://www.amazon.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Amazon</div>
+                </a>
+                <a href="https://www.uniqlo.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Uniqlo</div>
+                </a>
+                <a href="https://threadheads.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Threadheads</div>
+                </a>
+                <a href="https://www.printful.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Printful</div>
+                </a>
+                <a href="https://www.customink.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Custom Ink</div>
+                </a>
+                <a href="https://www.teepublic.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">TeePublic</div>
+                </a>
+                <a href="https://www.intotheam.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Into The AM</div>
+                </a>
+                <a href="https://www.urbanoutfitters.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Urban Outfitters</div>
+                </a>
+                <a href="https://www.etsy.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Etsy</div>
+                </a>
+                <a href="https://www.threadless.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="label">Threadless</div>
+                </a>
+            </div>
+        </section>
 
-            <a href="#" class="hologram-card" style="opacity: 0.6;">
-                <div class="video-mask">
-                    <video muted loop playsinline class="masked-video mask-plus">
-                        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
-                    </video>
-                </div>
-                <div class="label">EXPANDING</div>
-            </a>
-        </div>
+        <!-- PANTS SECTION -->
+        <section>
+            <h2>PANTS &amp; BOTTOMS</h2>
+            <div class="icon-grid">
+                <a href="https://www.uniqlo.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Uniqlo</div>
+                </a>
+                <a href="https://www.asos.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">ASOS</div>
+                </a>
+                <a href="https://www.everlane.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Everlane</div>
+                </a>
+                <a href="https://www.levi.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Levi’s</div>
+                </a>
+                <a href="https://shop.lululemon.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Lululemon</div>
+                </a>
+                <a href="https://bonobos.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Bonobos</div>
+                </a>
+                <a href="https://www.abercrombie.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Abercrombie &amp; Fitch</div>
+                </a>
+                <a href="https://www.zara.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person"></i></div>
+                    <div class="label">Zara</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- SUITS SECTION -->
+        <section>
+            <h2>SUITS &amp; FORMAL</h2>
+            <div class="icon-grid">
+                <a href="https://suitshop.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="label">SuitShop</div>
+                </a>
+                <a href="https://www.spierandmackay.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="label">Spier &amp; Mackay</div>
+                </a>
+                <a href="https://www.indochino.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="label">Indochino</div>
+                </a>
+                <a href="https://suitsupply.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="label">SuitSupply</div>
+                </a>
+                <a href="https://www.brooksbrothers.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="label">Brooks Brothers</div>
+                </a>
+                <a href="https://www.josbank.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div>
+                    <div class="label">Jos. A. Bank</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- LADIES’ WEAR SECTION -->
+        <section>
+            <h2>LADIES’ WEAR &amp; FASHION</h2>
+            <div class="icon-grid">
+                <a href="https://www.asos.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">ASOS</div>
+                </a>
+                <a href="https://www.anthropologie.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Anthropologie</div>
+                </a>
+                <a href="https://shop.mango.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Mango</div>
+                </a>
+                <a href="https://www.zara.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Zara</div>
+                </a>
+                <a href="https://www.everlane.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Everlane</div>
+                </a>
+                <a href="https://www.nordstrom.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Nordstrom</div>
+                </a>
+                <a href="https://www.thereformation.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Reformation</div>
+                </a>
+                <a href="https://www.aritzia.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div>
+                    <div class="label">Aritzia</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- CHILDREN’S WEAR SECTION -->
+        <section>
+            <h2>CHILDREN’S WEAR</h2>
+            <div class="icon-grid">
+                <a href="https://www.childrensplace.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-child"></i></div>
+                    <div class="label">The Children's Place</div>
+                </a>
+                <a href="https://www2.hm.com/en_us/kids.html" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-child"></i></div>
+                    <div class="label">H&amp;M Kids</div>
+                </a>
+                <a href="https://www.gap.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-child"></i></div>
+                    <div class="label">Gap Kids</div>
+                </a>
+                <a href="https://www.cartersoshkosh.ca" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-child"></i></div>
+                    <div class="label">Carter's / OshKosh</div>
+                </a>
+                <a href="https://www.uniqlo.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-child"></i></div>
+                    <div class="label">Uniqlo Kids</div>
+                </a>
+                <a href="https://www.hannaandersson.com" class="hologram-card" target="_blank">
+                    <div class="icon-wrapper"><i class="fa-solid fa-child"></i></div>
+                    <div class="label">Hanna Andersson</div>
+                </a>
+            </div>
+        </section>
+
     </div>
 
+    <!-- Footer -->
+    <footer>
+        BROUGHT TO YOU BY HERMES
+    </footer>
+
     <script>
-        // 1. Digital Rain System
+        // Digital Rain (clothing-themed)
         const canvas = document.getElementById('rain-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-        const gear = ['👕', '👗', '⚡', '🧥', '👖'];
+        const icons = ['👕', '👗', '🧥', '👖', '👟', '🧢', '👔', '🧦'];
         const fontSize = 18;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
+        const columns = Math.floor(width / fontSize);
+        let drops = Array(columns).fill(1);
 
         function drawRain() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
+            ctx.fillRect(0, 0, width, height);
             ctx.fillStyle = '#00f3ff';
-            ctx.font = fontSize + 'px Arial';
+            ctx.font = `${fontSize}px Arial`;
 
-            drops.forEach((y, i) => {
-                const char = gear[Math.floor(Math.random() * gear.length)];
-                ctx.fillText(char, i * fontSize, y * fontSize);
-                if (y * fontSize > canvas.height && Math.random() > 0.98) drops[i] = 0;
+            for (let i = 0; i < drops.length; i++) {
+                const text = icons[Math.floor(Math.random() * icons.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
-            });
+            }
         }
-        setInterval(drawRain, 50);
+        setInterval(drawRain, 45);
 
-        // 2. Global Ignition Trigger
+        // Video play trigger
         function igniteExperience() {
-            const allVideos = document.querySelectorAll('video');
-            allVideos.forEach(v => {
-                v.play().catch(e => console.log("Playback interaction initiated"));
-            });
+            const video = document.getElementById('bg-video');
+            if (video.paused) video.play();
         }
 
         window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            drops = Array(Math.floor(width / fontSize)).fill(1);
         });
     </script>
 </body>
