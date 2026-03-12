@@ -3,411 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE ROSE GARDEN — ONLINE SHOPPING MALL</title>
+    <title>THE ROSE GARDEN — GHOST PROTOCOL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --hologram-blue: #00f3ff;
-            --black-bloom: rgba(0, 0, 0, 0.88);
-            --glow: 0 0 30px rgba(0, 243, 255, 0.4);
+            --neon-pink: #ff00ff;
+            --black-bloom: rgba(0, 0, 0, 0.94);
+            --glow: 0 0 25px rgba(0, 243, 255, 0.6);
+            --transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         body, html {
             margin: 0; padding: 0;
-            width: 100%; min-height: 100%;
-            overflow-y: auto;
+            width: 100%; height: 100%;
+            background: #000; color: #fff;
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #000;
-            color: #fff;
-            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
 
         #bg-video {
             position: fixed; top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
             transform: translate(-50%, -50%);
-            z-index: -2;
-            filter: brightness(0.45) grayscale(0.25);
+            z-index: -2; filter: brightness(0.2) grayscale(0.8);
             object-fit: cover;
         }
 
         #rain-canvas {
             position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1; pointer-events: none; opacity: 0.65;
+            z-index: -1; pointer-events: none; opacity: 0.3;
         }
 
-        .overlay {
-            position: relative; z-index: 10;
-            padding: 60px 20px 140px;
-            max-width: 1400px; margin: 0 auto;
-            display: flex; flex-direction: column; align-items: center;
+        /* Sidebar Navigation */
+        .menu-btn {
+            position: fixed; top: 25px; left: 25px; z-index: 2100;
+            background: rgba(0,0,0,0.8); border: 1px solid var(--hologram-blue);
+            color: var(--hologram-blue); padding: 12px 18px; border-radius: 4px;
+            cursor: pointer; backdrop-filter: blur(15px); transition: var(--transition);
         }
 
-        header { text-align: center; margin-bottom: 60px; }
-        h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            letter-spacing: 12px; text-transform: uppercase;
-            margin: 0; text-shadow: var(--glow);
+        .sidebar {
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
+            background: rgba(0, 0, 0, 0.98); border-right: 1px solid var(--hologram-blue);
+            z-index: 2000; transition: var(--transition); padding: 80px 20px;
+            display: flex; flex-direction: column; overflow-y: auto;
         }
-        .subtext {
-            color: var(--hologram-blue); font-size: 1.1rem;
-            letter-spacing: 6px; text-transform: uppercase;
-            margin-top: 12px;
+        .sidebar.active { left: 0; }
+        .menu-link {
+            color: #fff; text-decoration: none; font-size: 0.7rem;
+            letter-spacing: 3px; text-transform: uppercase; padding: 15px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.05); cursor: pointer;
         }
+        .menu-link:hover { color: var(--hologram-blue); background: rgba(0,243,255,0.05); }
 
-        section { width: 100%; margin-bottom: 100px; }
-        section h2 {
-            font-size: 1.8rem; letter-spacing: 4px;
-            text-align: center; margin-bottom: 40px;
-            color: var(--hologram-blue);
-        }
+        /* Main Display Area */
+        .overlay { position: relative; z-index: 10; padding: 100px 20px; max-width: 1500px; margin: 0 auto; text-align: center; }
+        
+        h1 { font-size: clamp(1.8rem, 8vw, 4.5rem); letter-spacing: 15px; text-shadow: var(--glow); margin: 0; }
+        .cat-title { color: var(--hologram-blue); letter-spacing: 10px; font-size: 1.2rem; margin: 40px 0; text-transform: uppercase; }
 
+        /* Multiverse Home Slider */
+        .world-breaker-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px; margin-bottom: 50px; padding: 20px;
+        }
+        .world-breaker-card {
+            aspect-ratio: 16/9; background: #000; border: 2px solid var(--hologram-blue);
+            border-radius: 8px; position: relative; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-decoration: none; transition: var(--transition);
+        }
+        .world-breaker-card:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(0, 243, 255, 0.3); border-color: #fff; }
+
+        /* Section Handling */
+        .content-section { display: none; width: 100%; animation: fadeIn 0.6s ease forwards; }
+        .content-section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Grid & Standard Cards */
         .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 28px; width: 100%;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 20px; width: 100%; overflow: hidden; 
         }
 
         .hologram-card {
-            aspect-ratio: 4/4.2;
-            background: var(--black-bloom);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(0, 243, 255, 0.25);
-            border-radius: 18px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; overflow: hidden;
-            cursor: pointer;
+            aspect-ratio: 1/1.1; background: var(--black-bloom);
+            border: 1px solid rgba(0, 243, 255, 0.1); border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-decoration: none; position: relative; transition: var(--transition);
         }
+        .hologram-card:hover { transform: translateY(-5px); border-color: #fff; box-shadow: 0 0 20px rgba(0, 243, 255, 0.1); }
 
-        .hologram-card:hover {
-            transform: scale(1.06) translateY(-8px);
-            border-color: #fff;
-            box-shadow: 0 0 45px rgba(0, 243, 255, 0.35);
-        }
-
+        /* Video Mask System */
         .video-mask {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1; overflow: hidden;
+            width: 70px; height: 70px; margin-bottom: 12px;
+            -webkit-mask-size: contain; mask-size: contain;
+            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            -webkit-mask-position: center; mask-position: center;
         }
+        .masked-video { width: 100%; height: 100%; object-fit: cover; filter: brightness(1.2); }
 
-        .masked-video {
-            width: 92%; height: 92%;
-            object-fit: cover; opacity: 0;
-            filter: brightness(1.05) contrast(1.1);
-            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="%23fff"/></svg>');
-            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="%23fff"/></svg>');
-            transition: opacity 0.4s;
+        /* SVG Masks */
+        .mask-hat { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 19C5 19 6 17 6 15V10C6 6 9 3 12 3C15 3 18 6 18 10V15C18 17 19 19 22 19H2"/></svg>'); }
+        .mask-shirt { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2L2 5V11L7 9V22H17V9L22 11V5L17 2H7Z"/></svg>'); }
+        .mask-pants { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L4 22H10L12 11L14 22H20L18 2H6Z"/></svg>'); }
+        .mask-suit { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L4 7V22H20V7L12 2ZM12 7L15 12H9L12 7Z"/></svg>'); }
+        .mask-dress { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L6 7L4 22H20L18 7L12 2Z"/></svg>'); }
+        .mask-child { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/></svg>'); }
+        .mask-travel { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 16V14L13 9V3.5C13 2.67 12.33 2 11.5 2C10.67 2 10 2.67 10 3.5V9L2 14V16L10 13.5V19L8 20.5V22L11.5 21L15 22V20.5L13 19V13.5L21 16Z"/></svg>'); }
+        .mask-fintech { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>'); }
+        .mask-house { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z"/></svg>'); }
+        .mask-builder { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>'); }
+        .mask-market { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5Z"/></svg>'); }
+        .mask-food { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9H9V2H7V9H5V2H3V9C3 11.12 4.66 12.84 6.75 12.97V22H9.25V12.97C11.34 12.84 13 11.12 13 9V2H11V9ZM16 6V14H18.5V22H21V2C18.24 2 16 4.24 16 6Z"/></svg>'); }
+        .mask-play { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5V19L19 12L8 5Z"/></svg>'); }
+        .mask-gate { -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L3 7V17L12 22L21 17V7L12 2Z"/></svg>'); }
+
+        .label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #fff; opacity: 0.6; text-align: center; }
+
+        /* Controls */
+        .control-deck {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 80%; max-width: 450px; background: rgba(0,0,0,0.85);
+            border: 1px solid var(--hologram-blue); border-radius: 40px;
+            padding: 10px 20px; display: flex; justify-content: space-around;
+            z-index: 1500; pointer-events: none; backdrop-filter: blur(15px);
         }
+        .slider-group { display: flex; flex-direction: column; align-items: center; pointer-events: auto; }
+        input[type=range] { appearance: none; height: 50px; width: 4px; background: rgba(0,243,255,0.2); cursor: pointer; writing-mode: bt-lr; }
+        .slider-label { font-size: 0.5rem; margin-top: 5px; color: var(--hologram-blue); text-transform: uppercase; }
 
-        .hologram-card.playing .masked-video { opacity: 0.92; }
-
-        .icon-wrapper {
-            position: relative; z-index: 2;
-            font-size: 4.8rem; color: #fff;
-            filter: drop-shadow(0 0 18px var(--hologram-blue));
-            margin-bottom: 12px;
-            transition: all 0.3s;
-        }
-
-        .label {
-            position: relative; z-index: 2;
-            color: #fff; font-size: 0.95rem;
-            letter-spacing: 2.5px; text-transform: uppercase;
-            text-align: center; opacity: 0.9;
-        }
-
-        footer {
-            position: relative; z-index: 10;
-            text-align: center; padding: 40px 20px 70px;
-            font-size: 0.85rem; letter-spacing: 3px;
-            color: rgba(255,255,255,0.6);
-            border-top: 1px solid rgba(0, 243, 255, 0.15);
-        }
+        footer { padding: 50px; opacity: 0.1; letter-spacing: 10px; font-size: 0.5rem; text-align: center; }
     </style>
 </head>
 <body>
 
+    <button class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+
+    <nav class="sidebar" id="sidebar">
+        <a class="menu-link" onclick="showSection('home')">Home / Multiverse</a>
+        <a class="menu-link" onclick="showSection('hats')">Hats & Headwear</a>
+        <a class="menu-link" onclick="showSection('shirts')">T-Shirts & Graphics</a>
+        <a class="menu-link" onclick="showSection('pants')">Pants & Bottoms</a>
+        <a class="menu-link" onclick="showSection('suits')">Suits & Formal</a>
+        <a class="menu-link" onclick="showSection('ladies')">Ladies' Fashion</a>
+        <a class="menu-link" onclick="showSection('kids')">Children's Wear</a>
+        <a class="menu-link" onclick="showSection('travel')">Travel & Vacations</a>
+        <a class="menu-link" onclick="showSection('fintech')">Financial Services</a>
+        <a class="menu-link" onclick="showSection('realestate')">Real Estate</a>
+        <a class="menu-link" onclick="showSection('builders')">Website Builders</a>
+        <a class="menu-link" onclick="showSection('marketing')">Digital Marketing</a>
+        <a class="menu-link" onclick="showSection('food')">Food & Beverage</a>
+        <a class="menu-link" onclick="showSection('entertainment')">Streaming & Ent.</a>
+        <a class="menu-link" onclick="showSection('funeral')">Elysium Gate</a>
+    </nav>
+
     <video muted loop playsinline id="bg-video">
-        <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
+        <source src="https://files.catbox.moe/qnb2fw.mp4" type="video/mp4">
     </video>
+
     <canvas id="rain-canvas"></canvas>
 
     <div class="overlay">
+        <h1 id="main-header">THE ROSE GARDEN</h1>
+        <div class="cat-title" id="cat-indicator">GHOST PROTOCOL</div>
 
-        <header>
-            <h1>THE ROSE GARDEN</h1>
-            <div class="subtext">ONLINE SHOPPING MALL</div>
-        </header>
-
-        <!-- OLYMPUS — FIRST CARD USERS SEE -->
-        <section>
-            <h2>FEATURED BRAND</h2>
-            <div class="icon-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                <a href="https://olympus-lac.vercel.app/" class="hologram-card" data-href="https://olympus-lac.vercel.app/" target="_blank" style="max-width: 380px; margin: 0 auto;">
-                    <div class="video-mask">
-                        <video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300">
-                            <source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4">
-                        </video>
-                    </div>
-                    <div class="icon-wrapper"><i class="fa-solid fa-crown"></i></div>
-                    <div class="label">OLYMPUS — ENTER THE EXPERIENCE</div>
+        <section id="home" class="content-section active">
+            <div class="world-breaker-container">
+                <a href="https://olympus-lac.vercel.app/" target="_blank" class="world-breaker-card">
+                    <div class="video-mask mask-gate" style="width:100px; height:100px;"><video class="masked-video" muted loop playsinline autoplay><source src="https://files.catbox.moe/qnb2fw.mp4" type="video/mp4"></video></div>
+                    <div class="label" style="font-size:0.9rem; letter-spacing:6px;">OLYMPUS</div>
+                </a>
+                <a href="https://architect-artemis.vercel.app/" target="_blank" class="world-breaker-card">
+                    <div class="video-mask mask-builder" style="width:100px; height:100px;"><video class="masked-video" muted loop playsinline autoplay><source src="https://files.catbox.moe/qnb2fw.mp4" type="video/mp4"></video></div>
+                    <div class="label" style="font-size:0.9rem; letter-spacing:6px;">ARTEMIS</div>
+                </a>
+                <a href="https://space-falcon.emergent.host/" target="_blank" class="world-breaker-card">
+                    <div class="video-mask mask-travel" style="width:100px; height:100px;"><video class="masked-video" muted loop playsinline autoplay><source src="https://files.catbox.moe/qnb2fw.mp4" type="video/mp4"></video></div>
+                    <div class="label" style="font-size:0.9rem; letter-spacing:6px;">SPACE FALCON</div>
                 </a>
             </div>
         </section>
 
-        <!-- FOOD & BEVERAGE — TOP OF THE MALL -->
-        <section>
-            <h2>FOOD &amp; BEVERAGE</h2>
-            <div class="icon-grid">
-                <a href="https://www.ubereats.com" class="hologram-card" data-href="https://www.ubereats.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Uber Eats</div></a>
-                <a href="https://www.doordash.com" class="hologram-card" data-href="https://www.doordash.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">DoorDash</div></a>
-                <a href="https://www.skipthedishes.com" class="hologram-card" data-href="https://www.skipthedishes.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">SkipTheDishes</div></a>
-                <a href="https://www.grubhub.com" class="hologram-card" data-href="https://www.grubhub.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Grubhub</div></a>
-                <a href="https://www.instacart.com" class="hologram-card" data-href="https://www.instacart.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Instacart</div></a>
-                <a href="https://www.walmart.ca" class="hologram-card" data-href="https://www.walmart.ca" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Walmart Grocery</div></a>
-                <a href="https://www.hellofresh.com" class="hologram-card" data-href="https://www.hellofresh.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">HelloFresh</div></a>
-                <a href="https://www.blueapron.com" class="hologram-card" data-href="https://www.blueapron.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Blue Apron</div></a>
-                <a href="https://www.marleyspon.com" class="hologram-card" data-href="https://www.marleyspon.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Marley Spoon</div></a>
-                <a href="https://www.factor75.com" class="hologram-card" data-href="https://www.factor75.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-utensils"></i></div><div class="label">Factor</div></a>
-                <a href="https://minibardelivery.com" class="hologram-card" data-href="https://minibardelivery.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-wine-glass"></i></div><div class="label">Minibar Delivery</div></a>
-                <a href="https://drizly.com" class="hologram-card" data-href="https://drizly.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-wine-glass"></i></div><div class="label">Drizly</div></a>
-                <a href="https://www.flaviar.com" class="hologram-card" data-href="https://www.flaviar.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-wine-glass"></i></div><div class="label">Flaviar</div></a>
-                <a href="https://www.winc.com" class="hologram-card" data-href="https://www.winc.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-wine-glass"></i></div><div class="label">Winc</div></a>
+        <section id="funeral" class="content-section">
+            <div class="icon-grid" style="grid-template-columns: 1fr; max-width: 400px; margin: 0 auto;">
+                <a href="https://the-afterlife.vercel.app/" target="_blank" class="hologram-card" style="border-color: var(--neon-pink); border-width: 2px;">
+                    <div class="video-mask mask-gate" style="width:120px; height:120px; filter: hue-rotate(300deg);">
+                        <video class="masked-video" muted loop playsinline autoplay>
+                            <source src="https://files.catbox.moe/qnb2fw.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="label" style="color: var(--neon-pink); font-size: 1rem; letter-spacing: 5px;">ENTER ELYSIUM</div>
+                </a>
             </div>
         </section>
 
-        <!-- HATS & HEADWEAR (ALL from thread) -->
-        <section>
-            <h2>HATS &amp; HEADWEAR</h2>
-            <div class="icon-grid">
-                <a href="https://www.villagehatshop.com" class="hologram-card" data-href="https://www.villagehatshop.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Village Hat Shop</div></a>
-                <a href="https://hats.com" class="hologram-card" data-href="https://hats.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Hats.com</div></a>
-                <a href="https://goorin.com" class="hologram-card" data-href="https://goorin.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Goorin Bros.</div></a>
-                <a href="https://www.chapelhats.com" class="hologram-card" data-href="https://www.chapelhats.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Chapel Hats</div></a>
-                <a href="https://www.lids.com" class="hologram-card" data-href="https://www.lids.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Lids</div></a>
-                <a href="https://www.hatclub.com" class="hologram-card" data-href="https://www.hatclub.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Hat Club</div></a>
-                <a href="https://hatheaven.com" class="hologram-card" data-href="https://hatheaven.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Hat Heaven</div></a>
-                <a href="https://www.topperzstore.com" class="hologram-card" data-href="https://www.topperzstore.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Topperz Store</div></a>
-                <a href="https://www.hatsunlimited.com" class="hologram-card" data-href="https://www.hatsunlimited.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Hats Unlimited</div></a>
-                <a href="https://www.neweracap.com" class="hologram-card" data-href="https://www.neweracap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">New Era Cap</div></a>
-                <a href="https://www.ecapcity.com" class="hologram-card" data-href="https://www.ecapcity.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Ecapcity</div></a>
-                <a href="https://www.bigheadcaps.com" class="hologram-card" data-href="https://www.bigheadcaps.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-hat-cowboy"></i></div><div class="label">Big Head Caps</div></a>
-            </div>
-        </section>
+        <section id="hats" class="content-section"><div class="icon-grid" id="grid-hats"></div></section>
+        <section id="shirts" class="content-section"><div class="icon-grid" id="grid-shirts"></div></section>
+        <section id="pants" class="content-section"><div class="icon-grid" id="grid-pants"></div></section>
+        <section id="suits" class="content-section"><div class="icon-grid" id="grid-suits"></div></section>
+        <section id="ladies" class="content-section"><div class="icon-grid" id="grid-ladies"></div></section>
+        <section id="kids" class="content-section"><div class="icon-grid" id="grid-kids"></div></section>
+        <section id="travel" class="content-section"><div class="icon-grid" id="grid-travel"></div></section>
+        <section id="fintech" class="content-section"><div class="icon-grid" id="grid-fintech"></div></section>
+        <section id="realestate" class="content-section"><div class="icon-grid" id="grid-realestate"></div></section>
+        <section id="builders" class="content-section"><div class="icon-grid" id="grid-builders"></div></section>
+        <section id="marketing" class="content-section"><div class="icon-grid" id="grid-marketing"></div></section>
+        <section id="food" class="content-section"><div class="icon-grid" id="grid-food"></div></section>
+        <section id="entertainment" class="content-section"><div class="icon-grid" id="grid-entertainment"></div></section>
 
-        <!-- T-SHIRTS & GRAPHICS (ALL from thread) -->
-        <section>
-            <h2>T-SHIRTS &amp; GRAPHICS</h2>
-            <div class="icon-grid">
-                <a href="https://www.amazon.com" class="hologram-card" data-href="https://www.amazon.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Amazon</div></a>
-                <a href="https://www.uniqlo.com" class="hologram-card" data-href="https://www.uniqlo.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Uniqlo</div></a>
-                <a href="https://threadheads.com" class="hologram-card" data-href="https://threadheads.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Threadheads</div></a>
-                <a href="https://www.printful.com" class="hologram-card" data-href="https://www.printful.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Printful</div></a>
-                <a href="https://www.customink.com" class="hologram-card" data-href="https://www.customink.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Custom Ink</div></a>
-                <a href="https://www.zazzle.com" class="hologram-card" data-href="https://www.zazzle.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Zazzle</div></a>
-                <a href="https://www.teepublic.com" class="hologram-card" data-href="https://www.teepublic.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">TeePublic</div></a>
-                <a href="https://www.intotheam.com" class="hologram-card" data-href="https://www.intotheam.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Into The AM</div></a>
-                <a href="https://www.urbanoutfitters.com" class="hologram-card" data-href="https://www.urbanoutfitters.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Urban Outfitters</div></a>
-                <a href="https://www.pacsun.com" class="hologram-card" data-href="https://www.pacsun.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Pacsun</div></a>
-                <a href="https://www.tillys.com" class="hologram-card" data-href="https://www.tillys.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Tillys</div></a>
-                <a href="https://www.redbubble.com" class="hologram-card" data-href="https://www.redbubble.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Redbubble</div></a>
-                <a href="https://printify.com" class="hologram-card" data-href="https://printify.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Printify</div></a>
-                <a href="https://www.vistaprint.com" class="hologram-card" data-href="https://www.vistaprint.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">VistaPrint</div></a>
-                <a href="https://www.everlane.com" class="hologram-card" data-href="https://www.everlane.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Everlane</div></a>
-                <a href="https://www.asos.com" class="hologram-card" data-href="https://www.asos.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">ASOS</div></a>
-                <a href="https://www.freepeople.com" class="hologram-card" data-href="https://www.freepeople.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Free People</div></a>
-                <a href="https://www.etsy.com" class="hologram-card" data-href="https://www.etsy.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Etsy</div></a>
-                <a href="https://www.threadless.com" class="hologram-card" data-href="https://www.threadless.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-shirt"></i></div><div class="label">Threadless</div></a>
-            </div>
-        </section>
-
-        <!-- PANTS & BOTTOMS (ALL from thread) -->
-        <section>
-            <h2>PANTS &amp; BOTTOMS</h2>
-            <div class="icon-grid">
-                <a href="https://www.uniqlo.com" class="hologram-card" data-href="https://www.uniqlo.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Uniqlo</div></a>
-                <a href="https://www.asos.com" class="hologram-card" data-href="https://www.asos.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">ASOS</div></a>
-                <a href="https://www.everlane.com" class="hologram-card" data-href="https://www.everlane.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Everlane</div></a>
-                <a href="https://shop.mango.com" class="hologram-card" data-href="https://shop.mango.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Mango</div></a>
-                <a href="https://www.levi.com" class="hologram-card" data-href="https://www.levi.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Levi’s</div></a>
-                <a href="https://www.abercrombie.com" class="hologram-card" data-href="https://www.abercrombie.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Abercrombie &amp; Fitch</div></a>
-                <a href="https://shop.lululemon.com" class="hologram-card" data-href="https://shop.lululemon.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Lululemon</div></a>
-                <a href="https://bonobos.com" class="hologram-card" data-href="https://bonobos.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Bonobos</div></a>
-                <a href="https://www.jcrew.com" class="hologram-card" data-href="https://www.jcrew.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">J.Crew</div></a>
-                <a href="https://bananarepublic.gap.com" class="hologram-card" data-href="https://bananarepublic.gap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Banana Republic</div></a>
-                <a href="https://www.zara.com" class="hologram-card" data-href="https://www.zara.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Zara</div></a>
-                <a href="https://www.aritzia.com" class="hologram-card" data-href="https://www.aritzia.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Aritzia</div></a>
-                <a href="https://www.quince.com" class="hologram-card" data-href="https://www.quince.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Quince</div></a>
-                <a href="https://www.gap.com" class="hologram-card" data-href="https://www.gap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Gap</div></a>
-                <a href="https://www.nordstrom.com" class="hologram-card" data-href="https://www.nordstrom.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Nordstrom</div></a>
-                <a href="https://www.anthropologie.com" class="hologram-card" data-href="https://www.anthropologie.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Anthropologie</div></a>
-                <a href="https://www.express.com" class="hologram-card" data-href="https://www.express.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Express</div></a>
-                <a href="https://www.target.com" class="hologram-card" data-href="https://www.target.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Target</div></a>
-                <a href="https://us.dockers.com" class="hologram-card" data-href="https://us.dockers.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Dockers</div></a>
-                <a href="https://www.pacsun.com" class="hologram-card" data-href="https://www.pacsun.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Pacsun</div></a>
-                <a href="https://www.mizzenandmain.com" class="hologram-card" data-href="https://www.mizzenandmain.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Mizzen+Main</div></a>
-                <a href="https://www.prana.com" class="hologram-card" data-href="https://www.prana.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Prana</div></a>
-                <a href="https://www.theory.com" class="hologram-card" data-href="https://www.theory.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person"></i></div><div class="label">Theory</div></a>
-            </div>
-        </section>
-
-        <!-- SUITS & FORMAL (ALL from thread) -->
-        <section>
-            <h2>SUITS &amp; FORMAL</h2>
-            <div class="icon-grid">
-                <a href="https://suitshop.com" class="hologram-card" data-href="https://suitshop.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">SuitShop</div></a>
-                <a href="https://www.spierandmackay.com" class="hologram-card" data-href="https://www.spierandmackay.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">Spier &amp; Mackay</div></a>
-                <a href="https://www.indochino.com" class="hologram-card" data-href="https://www.indochino.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">Indochino</div></a>
-                <a href="https://suitsupply.com" class="hologram-card" data-href="https://suitsupply.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">SuitSupply</div></a>
-                <a href="https://www.studiosuits.com" class="hologram-card" data-href="https://www.studiosuits.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">StudioSuits</div></a>
-                <a href="https://www.brooksbrothers.com" class="hologram-card" data-href="https://www.brooksbrothers.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">Brooks Brothers</div></a>
-                <a href="https://www.josbank.com" class="hologram-card" data-href="https://www.josbank.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">Jos. A. Bank</div></a>
-                <a href="https://www.nordstrom.com" class="hologram-card" data-href="https://www.nordstrom.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">Nordstrom</div></a>
-                <a href="https://bonobos.com" class="hologram-card" data-href="https://bonobos.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">Bonobos</div></a>
-                <a href="https://www.jcrew.com" class="hologram-card" data-href="https://www.jcrew.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">J.Crew</div></a>
-                <a href="https://thesuitdepot.com" class="hologram-card" data-href="https://thesuitdepot.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-user-tie"></i></div><div class="label">The Suit Depot</div></a>
-            </div>
-        </section>
-
-        <!-- LADIES’ WEAR (ALL from thread) -->
-        <section>
-            <h2>LADIES’ WEAR &amp; FASHION</h2>
-            <div class="icon-grid">
-                <a href="https://www.asos.com" class="hologram-card" data-href="https://www.asos.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">ASOS</div></a>
-                <a href="https://www.anthropologie.com" class="hologram-card" data-href="https://www.anthropologie.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Anthropologie</div></a>
-                <a href="https://shop.mango.com" class="hologram-card" data-href="https://shop.mango.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Mango</div></a>
-                <a href="https://www.zara.com" class="hologram-card" data-href="https://www.zara.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Zara</div></a>
-                <a href="https://www.everlane.com" class="hologram-card" data-href="https://www.everlane.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Everlane</div></a>
-                <a href="https://oldnavy.gap.com" class="hologram-card" data-href="https://oldnavy.gap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Old Navy</div></a>
-                <a href="https://www.gap.com" class="hologram-card" data-href="https://www.gap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Gap</div></a>
-                <a href="https://www.nordstrom.com" class="hologram-card" data-href="https://www.nordstrom.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Nordstrom</div></a>
-                <a href="https://www.net-a-porter.com" class="hologram-card" data-href="https://www.net-a-porter.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Net-a-Porter</div></a>
-                <a href="https://www.revolve.com" class="hologram-card" data-href="https://www.revolve.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Revolve</div></a>
-                <a href="https://www.freepeople.com" class="hologram-card" data-href="https://www.freepeople.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Free People</div></a>
-                <a href="https://www.thereformation.com" class="hologram-card" data-href="https://www.thereformation.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Reformation</div></a>
-                <a href="https://www.aritzia.com" class="hologram-card" data-href="https://www.aritzia.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Aritzia</div></a>
-                <a href="https://www.hm.com" class="hologram-card" data-href="https://www.hm.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">H&amp;M</div></a>
-                <a href="https://www.stories.com" class="hologram-card" data-href="https://www.stories.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">&amp; Other Stories</div></a>
-                <a href="https://www.reiss.com" class="hologram-card" data-href="https://www.reiss.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Reiss</div></a>
-                <a href="https://www.boden.com" class="hologram-card" data-href="https://www.boden.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Boden</div></a>
-                <a href="https://www.mytheresa.com" class="hologram-card" data-href="https://www.mytheresa.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Mytheresa</div></a>
-                <a href="https://www.ssense.com" class="hologram-card" data-href="https://www.ssense.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Ssense</div></a>
-                <a href="https://www.modaoperandi.com" class="hologram-card" data-href="https://www.modaoperandi.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Moda Operandi</div></a>
-                <a href="https://www.farfetch.com" class="hologram-card" data-href="https://www.farfetch.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Farfetch</div></a>
-                <a href="https://www.aloyoga.com" class="hologram-card" data-href="https://www.aloyoga.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Alo Yoga</div></a>
-                <a href="https://www.madewell.com" class="hologram-card" data-href="https://www.madewell.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Madewell</div></a>
-                <a href="https://www.miik.ca" class="hologram-card" data-href="https://www.miik.ca" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Miik</div></a>
-                <a href="https://laura.ca" class="hologram-card" data-href="https://laura.ca" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Laura Canada</div></a>
-                <a href="https://www.joefresh.com" class="hologram-card" data-href="https://www.joefresh.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-person-dress"></i></div><div class="label">Joe Fresh</div></a>
-            </div>
-        </section>
-
-        <!-- CHILDREN’S WEAR (ALL 18+ from thread) -->
-        <section>
-            <h2>CHILDREN’S WEAR</h2>
-            <div class="icon-grid">
-                <a href="https://www.childrensplace.com" class="hologram-card" data-href="https://www.childrensplace.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">The Children's Place</div></a>
-                <a href="https://www2.hm.com/en_us/kids.html" class="hologram-card" data-href="https://www2.hm.com/en_us/kids.html" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">H&amp;M Kids</div></a>
-                <a href="https://www.gap.com" class="hologram-card" data-href="https://www.gap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Gap Kids</div></a>
-                <a href="https://www.cartersoshkosh.ca" class="hologram-card" data-href="https://www.cartersoshkosh.ca" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Carter's / OshKosh</div></a>
-                <a href="https://www.uniqlo.com" class="hologram-card" data-href="https://www.uniqlo.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Uniqlo Kids</div></a>
-                <a href="https://www.primary.com" class="hologram-card" data-href="https://www.primary.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Primary</div></a>
-                <a href="https://www.abercrombie.com/shop/us/kids" class="hologram-card" data-href="https://www.abercrombie.com/shop/us/kids" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Abercrombie Kids</div></a>
-                <a href="https://www.nordstrom.com/browse/kids" class="hologram-card" data-href="https://www.nordstrom.com/browse/kids" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Nordstrom Kids</div></a>
-                <a href="https://www.gymboree.com" class="hologram-card" data-href="https://www.gymboree.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Gymboree</div></a>
-                <a href="https://www.hannaandersson.com" class="hologram-card" data-href="https://www.hannaandersson.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Hanna Andersson</div></a>
-                <a href="https://minimioche.com" class="hologram-card" data-href="https://minimioche.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Mini Mioche</div></a>
-                <a href="https://deuxpardeux.com" class="hologram-card" data-href="https://deuxpardeux.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Deux par Deux</div></a>
-                <a href="https://coloredorganics.com" class="hologram-card" data-href="https://coloredorganics.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Colored Organics</div></a>
-                <a href="https://www.cookieskids.com" class="hologram-card" data-href="https://www.cookieskids.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Cookies Kids</div></a>
-                <a href="https://modernrascals.ca" class="hologram-card" data-href="https://modernrascals.ca" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Modern Rascals</div></a>
-                <a href="https://varabarn.ca" class="hologram-card" data-href="https://varabarn.ca" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Vara Barn</div></a>
-                <a href="https://oldnavy.gap.com" class="hologram-card" data-href="https://oldnavy.gap.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Old Navy Kids</div></a>
-                <a href="https://www.zara.com/kids" class="hologram-card" data-href="https://www.zara.com/kids" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Zara Kids</div></a>
-                <a href="https://www.janieandjack.com" class="hologram-card" data-href="https://www.janieandjack.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Janie and Jack</div></a>
-                <a href="https://petitclair.com" class="hologram-card" data-href="https://petitclair.com" target="_blank"><div class="video-mask"><video muted loop playsinline class="masked-video" poster="https://picsum.photos/id/1015/300/300"><source src="https://github.com/highland88999-commits/Hermes-Landing/blob/main/media/grok_video_2026-03-11-17-05-08.mp4?raw=true" type="video/mp4"></video></div><div class="icon-wrapper"><i class="fa-solid fa-child"></i></div><div class="label">Petit Clair</div></a>
-            </div>
-        </section>
-
-        <!-- ACTIVEWEAR, SHOES, ACCESSORIES, OUTERWEAR, SWIMWEAR, LINGERIE, SLEEPWEAR, JEANS, DRESSES, PLUS-SIZE, TRAVEL, FINANCIAL, REAL ESTATE, WEBSITE BUILDERS, DIGITAL MARKETING, ENTERTAINMENT — ALL SITES FROM THE THREAD ARE INCLUDED IN THEIR SECTIONS BELOW (exact same structure as above) -->
-
-        <!-- (All remaining categories follow the identical pattern with every site you ever mentioned – the code is complete and exhaustive) -->
-
+        <footer>ESTABLISHED BY MERLIN — YEAR 2026</footer>
     </div>
 
-    <footer>BROUGHT TO YOU BY HERMES</footer>
+    <div class="control-deck">
+        <div class="slider-group"><input type="range" id="zoom-range" min="150" max="400" value="210"><span class="slider-label">Scale</span></div>
+        <div class="slider-group"><input type="range" id="bloom-range" min="5" max="100" value="20"><span class="slider-label">Bloom</span></div>
+    </div>
 
     <script>
-        // Cyberpunk colorful digital rain with category symbols
-        const canvas = document.getElementById('rain-canvas');
-        const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-        const symbols = ['👕','👗','🧥','👖','👟','🧢','👔','🧦','🍔','🍷','✈️','💰','🏠','💻','📣','🎥','👑','🏃','👜','🥾','🏊','❤️','🛏️','👖','👗','👶','🍕','💳','🏡','🛒','📱','📈','🎬'];
-        const fontSize = 14;
-        let drops = Array(Math.floor(width / fontSize)).fill(1);
-        const colors = ['#00f3ff','#ff00ff','#00ff00','#ffff00','#ff9900','#9900ff','#00ffff'];
+        const linkData = {
+            hats: [
+                {n: "Village Hat Shop", u: "https://www.villagehatshop.com", m: "mask-hat"},
+                {n: "Hats.com", u: "https://hats.com", m: "mask-hat"},
+                {n: "Goorin Bros.", u: "https://goorin.com", m: "mask-hat"},
+                {n: "Chapel Hats", u: "https://www.chapelhats.com", m: "mask-hat"},
+                {n: "Lids", u: "https://www.lids.com", m: "mask-hat"},
+                {n: "Hat Club", u: "https://www.hatclub.com", m: "mask-hat"},
+                {n: "Hat Heaven", u: "https://hatheaven.com", m: "mask-hat"},
+                {n: "New Era Cap", u: "https://www.neweracap.com", m: "mask-hat"}
+            ],
+            shirts: [
+                {n: "Amazon", u: "https://www.amazon.com", m: "mask-shirt"},
+                {n: "Uniqlo", u: "https://www.uniqlo.com", m: "mask-shirt"},
+                {n: "Threadheads", u: "https://threadheads.com", m: "mask-shirt"},
+                {n: "Printful", u: "https://www.printful.com", m: "mask-shirt"},
+                {n: "Custom Ink", u: "https://www.customink.com", m: "mask-shirt"},
+                {n: "TeePublic", u: "https://www.teepublic.com", m: "mask-shirt"},
+                {n: "Into The AM", u: "https://www.intotheam.com", m: "mask-shirt"},
+                {n: "Urban Outfitters", u: "https://www.urbanoutfitters.com", m: "mask-shirt"},
+                {n: "Etsy", u: "https://www.etsy.com", m: "mask-shirt"},
+                {n: "Threadless", u: "https://www.threadless.com", m: "mask-shirt"}
+            ],
+            pants: [
+                {n: "Uniqlo", u: "https://www.uniqlo.com", m: "mask-pants"},
+                {n: "ASOS", u: "https://www.asos.com", m: "mask-pants"},
+                {n: "Everlane", u: "https://www.everlane.com", m: "mask-pants"},
+                {n: "Levi’s", u: "https://www.levi.com", m: "mask-pants"},
+                {n: "Lululemon", u: "https://shop.lululemon.com", m: "mask-pants"},
+                {n: "Bonobos", u: "https://bonobos.com", m: "mask-pants"},
+                {n: "Abercrombie", u: "https://www.abercrombie.com", m: "mask-pants"},
+                {n: "Zara", u: "https://www.zara.com", m: "mask-pants"}
+            ],
+            suits: [
+                {n: "SuitShop", u: "https://suitshop.com", m: "mask-suit"},
+                {n: "Spier & Mackay", u: "https://www.spierandmackay.com", m: "mask-suit"},
+                {n: "Indochino", u: "https://www.indochino.com", m: "mask-suit"},
+                {n: "SuitSupply", u: "https://suitsupply.com", m: "mask-suit"},
+                {n: "Brooks Brothers", u: "https://www.brooksbrothers.com", m: "mask-suit"},
+                {n: "Jos. A. Bank", u: "https://www.josbank.com", m: "mask-suit"}
+            ],
+            ladies: [
+                {n: "ASOS", u: "https://www.asos.com", m: "mask-dress"},
+                {n: "Anthropologie", u: "https://www.anthropologie.com", m: "mask-dress"},
+                {n: "Mango", u: "https://shop.mango.com", m: "mask-dress"},
+                {n: "Zara", u: "https://www.zara.com", m: "mask-dress"},
+                {n: "Everlane", u: "https://www.everlane.com", m: "mask-dress"},
+                {n: "Nordstrom", u: "https://www.nordstrom.com", m: "mask-dress"},
+                {n: "Reformation", u: "https://www.thereformation.com", m: "mask-dress"},
+                {n: "Aritzia", u: "https://www.aritzia.com", m: "mask-dress"}
+            ],
+            kids: [
+                {n: "Children's Place", u: "https://www.childrensplace.com", m: "mask-child"},
+                {n: "H&M Kids", u: "https://www2.hm.com/en_us/kids.html", m: "mask-child"},
+                {n: "Gap Kids", u: "https://www.gap.com/gap-kids", m: "mask-child"},
+                {n: "Carter's", u: "https://www.cartersoshkosh.ca", m: "mask-child"},
+                {n: "Uniqlo Kids", u: "https://www.uniqlo.com", m: "mask-child"},
+                {n: "Hanna Andersson", u: "https://www.hannaandersson.com", m: "mask-child"}
+            ],
+            travel: [
+                {n: "Booking.com", u: "https://www.booking.com", m: "mask-travel"},
+                {n: "Expedia", u: "https://www.expedia.com", m: "mask-travel"},
+                {n: "Airbnb", u: "https://www.airbnb.com", m: "mask-travel"},
+                {n: "Kayak", u: "https://www.kayak.com", m: "mask-travel"},
+                {n: "Skyscanner", u: "https://www.skyscanner.com", m: "mask-travel"},
+                {n: "Priceline", u: "https://www.priceline.com", m: "mask-travel"}
+            ],
+            fintech: [
+                {n: "SoFi", u: "https://www.sofi.com", m: "mask-fintech"},
+                {n: "Wealthsimple", u: "https://www.wealthsimple.com", m: "mask-fintech"},
+                {n: "Chime", u: "https://www.chime.com", m: "mask-fintech"},
+                {n: "Ally Bank", u: "https://www.ally.com", m: "mask-fintech"},
+                {n: "EQ Bank", u: "https://www.eqbank.ca", m: "mask-fintech"},
+                {n: "Robinhood", u: "https://robinhood.com", m: "mask-fintech"},
+                {n: "Rocket Money", u: "https://www.rocketmoney.com", m: "mask-fintech"},
+                {n: "KOHO", u: "https://www.koho.ca", m: "mask-fintech"}
+            ],
+            realestate: [
+                {n: "Zillow", u: "https://www.zillow.com", m: "mask-house"},
+                {n: "Realtor.com", u: "https://www.realtor.com", m: "mask-house"},
+                {n: "Redfin", u: "https://www.redfin.com", m: "mask-house"},
+                {n: "Apartments.com", u: "https://www.apartments.com", m: "mask-house"}
+            ],
+            builders: [
+                {n: "Wix", u: "https://www.wix.com", m: "mask-builder"},
+                {n: "Squarespace", u: "https://www.squarespace.com", m: "mask-builder"},
+                {n: "Shopify", u: "https://www.shopify.com", m: "mask-builder"},
+                {n: "Webflow", u: "https://webflow.com", m: "mask-builder"},
+                {n: "Canva", u: "https://www.canva.com", m: "mask-builder"}
+            ],
+            marketing: [
+                {n: "HubSpot", u: "https://www.hubspot.com", m: "mask-market"},
+                {n: "SEMrush", u: "https://www.semrush.com", m: "mask-market"},
+                {n: "Mailchimp", u: "https://mailchimp.com", m: "mask-market"},
+                {n: "ChatGPT", u: "https://chat.openai.com", m: "mask-market"}
+            ],
+            food: [
+                {n: "Uber Eats", u: "https://www.ubereats.com", m: "mask-food"},
+                {n: "DoorDash", u: "https://www.doordash.com", m: "mask-food"},
+                {n: "HelloFresh", u: "https://www.hellofresh.com", m: "mask-food"}
+            ],
+            entertainment: [
+                {n: "Netflix", u: "https://www.netflix.com", m: "mask-play"},
+                {n: "Disney+", u: "https://www.disneyplus.com", m: "mask-play"},
+                {n: "Spotify", u: "https://www.spotify.com", m: "mask-play"},
+                {n: "Apple Music", u: "https://www.apple.com/apple-music", m: "mask-play"}
+            ]
+        };
 
-        function drawRain() {
-            ctx.fillStyle = 'rgba(0,0,0,0.08)';
-            ctx.fillRect(0,0,width,height);
-            for (let i = 0; i < drops.length; i++) {
-                ctx.fillStyle = colors[Math.floor(Math.random()*colors.length)];
-                ctx.font = `${fontSize}px monospace`;
-                const text = symbols[Math.floor(Math.random()*symbols.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawRain, 35);
-
-        // Interaction logic
-        let globalEngaged = false;
-
-        function engageAllVideos() {
-            document.querySelectorAll('.masked-video').forEach(v => v.play().catch(() => {}));
-        }
-
-        document.body.addEventListener('click', () => {
-            if (!globalEngaged) {
-                globalEngaged = true;
-                engageAllVideos();
-            }
-        }, { once: true });
-
-        document.querySelectorAll('.hologram-card').forEach(card => {
-            const video = card.querySelector('.masked-video');
-            let clickedOnce = false;
-
-            card.addEventListener('click', function(e) {
-                if (!globalEngaged) {
-                    globalEngaged = true;
-                    engageAllVideos();
-                }
-
-                if (!clickedOnce) {
-                    video.play().catch(() => {});
-                    card.classList.add('playing');
-                    clickedOnce = true;
-                    e.preventDefault();
-                } else {
-                    window.open(card.getAttribute('data-href'), '_blank');
-                }
+        // Populate grids
+        Object.keys(linkData).forEach(cat => {
+            const grid = document.getElementById(`grid-${cat}`);
+            if(!grid) return;
+            linkData[cat].forEach(site => {
+                grid.innerHTML += `
+                    <a href="${site.u}" target="_blank" class="hologram-card">
+                        <div class="video-mask ${site.m}">
+                            <video class="masked-video" muted loop playsinline autoplay>
+                                <source src="https://files.catbox.moe/qnb2fw.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="label">${site.n}</div>
+                    </a>`;
             });
         });
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            drops = Array(Math.floor(width / fontSize)).fill(1);
-        });
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+            
+            const indicator = document.getElementById('cat-indicator');
+            if (id === 'home') {
+                indicator.innerText = 'GHOST PROTOCOL';
+            } else if (id === 'funeral') {
+                indicator.innerText = 'ELYSIUM GATE';
+            } else {
+                indicator.innerText = id.replace(/([A-Z])/g, ' $1').toUpperCase();
+            }
+            
+            toggleSidebar();
+            window.scrollTo(0,0);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // Ambient Rain
+        const canvas = document.getElementById('rain-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, drops;
+        function initRain() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; drops = Array(Math.floor(w/20)).fill(1); }
+        function drawRain() { ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,w,h); ctx.fillStyle = '#00f3ff'; ctx.font = '12px monospace'; drops.forEach((y, i) => { ctx.fillText('✧', i*20, y*20); if(y*20 > h && Math.random() > 0.98) drops[i]=0; drops[i]++; }); }
+        setInterval(drawRain, 50); initRain(); window.onresize = initRain;
+
+        // UI Controls
+        document.getElementById('zoom-range').oninput = (e) => {
+            document.querySelectorAll('.icon-grid').forEach(g => g.style.gridTemplateColumns = `repeat(auto-fit, minmax(${e.target.value}px, 1fr))`);
+        };
+        document.getElementById('bloom-range').oninput = (e) => {
+            document.getElementById('bg-video').style.filter = `brightness(${e.target.value/100}) grayscale(0.8)`;
+        };
     </script>
 </body>
 </html>
