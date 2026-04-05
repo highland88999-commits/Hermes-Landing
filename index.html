@@ -48,11 +48,14 @@
         .hologram-card:hover { transform: translateY(-8px); border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,255,255,0.4); }
         .video-box { width: 100%; height: 110px; background: #000; position: relative; }
         .masked-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: hue-rotate(10deg); }
-        .label { padding: 15px; color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
+        
+        /* Updated Label and Sub-Label Styles */
+        .label-container { padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .label { color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
+        .sub-label { color: var(--neon-cyan); font-size: 0.55rem; text-align: center; letter-spacing: 1px; opacity: 0.8; }
 
         #obs-hint { position: fixed; bottom: 20px; width: 100%; text-align: center; color: rgba(0,255,255,0.4); font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; pointer-events: none; z-index: 5000; }
 
-        /* SUBMISSION TERMINAL STYLES */
         .terminal-container { width: 100%; max-width: 800px; margin: 80px auto 40px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border: 1px solid var(--neon-cyan); border-radius: 8px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); overflow: hidden; pointer-events: auto; }
         .terminal-header { background: rgba(0, 255, 255, 0.1); padding: 12px 20px; color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; }
         .pulse-dot { width: 8px; height: 8px; background: var(--neon-purple); border-radius: 50%; box-shadow: 0 0 10px var(--neon-purple); animation: pulse 1.5s infinite; }
@@ -165,6 +168,7 @@
             { id: "afterlife", name: "Afterlife & Beyond" },
             { id: "abyssal", name: "Abyssal & Aquatic" },
             { id: "tech", name: "The Tech Stack" },
+            { id: "employment", name: "Employment & Careers" }, // Added Employment
             { id: "hardware", name: "Hardware & Auctions" },
             { id: "mobile", name: "Mobile & Comms" },
             { id: "apparel", name: "Elite Apparel" },
@@ -190,6 +194,8 @@
                 { n: "Nexus Symbiote", u: "https://nexus-symbiote.onrender.com/" }
             ],
             featured: [
+                { n: "Pan's Labyrinth", u: "https://pan-s-labrynth.vercel.app/" }, // Added
+                { n: "Raptor Rush", u: "https://raptor-rush.vercel.app/" },       // Added
                 { n: "REM-PSI Mauve", u: "https://rem-psi-mauve.vercel.app/" },
                 { n: "Olympus LAC", u: "https://olympus-lac.vercel.app/" },
                 { n: "Architect Artemis", u: "https://architect-artemis.vercel.app/" },
@@ -209,13 +215,25 @@
                 { n: "Convergence Murex", u: "https://convergence-murex.vercel.app/" },
                 { n: "Artemis Hub", u: "https://artemis-hub.vercel.app/" }
             ],
+            employment: [ // New Section
+                { n: "Indeed Canada", u: "https://ca.indeed.com" },
+                { n: "ZipRecruiter", u: "https://www.ziprecruiter.com" }
+            ],
+            food: [
+                { 
+                    n: "Instacart", 
+                    u: "https://shoppers.instacart.com/?referral=LAWS1AAFAA&utm_medium=copy&utm_source=instacart_referral&utm_campaign=supply_referral", 
+                    s: "Add Referral Code: LAWS1AAFAA" // Added subtext
+                },
+                { n: "SkipTheDishes", u: "https://www.skipthedishes.com" },
+                { n: "Uber Eats", u: "https://www.ubereats.com" }
+            ],
+            // ... remaining categories remain same as your original code
             renewed: [
                 { n: "Aetheris Business Model", u: "https://aetheris-business-model.vercel.app/" },
                 { n: "Olympus Aetheris", u: "https://olympus-aetheris.vercel.app/" }
             ],
-            afterlife: [
-                { n: "The Afterlife", u: "https://the-afterlife.vercel.app/" }
-            ],
+            afterlife: [{ n: "The Afterlife", u: "https://the-afterlife.vercel.app/" }],
             abyssal: [
                 { n: "Abyssal Voyage", u: "https://abyssal-voyage-lemon.vercel.app/" },
                 { n: "Georgia Aquarium", u: "https://georgia-aquarium.vercel.app/" }
@@ -280,11 +298,6 @@
                 { n: "Cineplex", u: "https://www.cineplex.com" },
                 { n: "West Edmonton Mall", u: "https://www.wem.ca" }
             ],
-            food: [
-                { n: "Instacart", u: "https://www.instacart.com" },
-                { n: "SkipTheDishes", u: "https://www.skipthedishes.com" },
-                { n: "Uber Eats", u: "https://www.ubereats.com" }
-            ],
             travel: [
                 { n: "Atlas Obscura", u: "https://www.atlasobscura.com" },
                 { n: "Expedia", u: "https://www.expedia.ca" },
@@ -310,12 +323,10 @@
         const vidUrl = "https://files.catbox.moe/qnb2fw.mp4";
         const sidebar = document.getElementById('sidebar');
 
-        // Sidebar Generation
         categories.forEach(cat => {
             sidebar.innerHTML += `<a class="menu-link" id="link-${cat.id}" onclick="showSection('${cat.id}')">${cat.name}</a>`;
         });
 
-        // Async render function to combine hardcoded and dynamic GitHub links
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
@@ -327,10 +338,7 @@
             indicator.innerText = categories.find(c => c.id === id)?.name || id;
             grid.innerHTML = '';
             
-            // 1. Get Static Links
             const staticLinks = linkData[id] || [];
-
-            // 2. Fetch Dynamic Links (Paid submissions stored in GitHub)
             let dynamicLinks = [];
             try {
                 const response = await fetch('api/links-archive.json');
@@ -338,18 +346,21 @@
                     const archive = await response.json();
                     dynamicLinks = archive[id] || [];
                 }
-            } catch (e) {
-                console.log("Dynamic archive not loaded or empty.");
-            }
+            } catch (e) { console.log("Dynamic archive not loaded."); }
 
-            // 3. Merge and Render
             const allLinks = [...staticLinks, ...dynamicLinks];
 
             allLinks.forEach(item => {
+                // Check if there is subtext (s) to display
+                const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
+                
                 grid.innerHTML += `
                 <a href="${item.u}" target="_blank" class="hologram-card">
                     <div class="video-box"><video class="masked-video" muted loop playsinline autoplay><source src="${vidUrl}" type="video/mp4"></video></div>
-                    <div class="label">${item.n}</div>
+                    <div class="label-container">
+                        <div class="label">${item.n}</div>
+                        ${subtextHtml}
+                    </div>
                 </a>`;
             });
 
@@ -368,10 +379,14 @@
                 
                 Object.values(linkData).flat().forEach(item => {
                     if(item.n.toLowerCase().includes(query)) {
+                        const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
                         grid.innerHTML += `
                         <a href="${item.u}" target="_blank" class="hologram-card">
                             <div class="video-box"><video class="masked-video" muted loop playsinline autoplay><source src="${vidUrl}" type="video/mp4"></video></div>
-                            <div class="label">${item.n}</div>
+                            <div class="label-container">
+                                <div class="label">${item.n}</div>
+                                ${subtextHtml}
+                            </div>
                         </a>`;
                     }
                 });
@@ -385,15 +400,10 @@
         function processGateway(gateway) {
             const nameInput = document.getElementById('newLinkName').value.trim();
             const urlInput = document.getElementById('newLinkUrl').value.trim();
-            const category = document.getElementById('cat-indicator').innerText;
-
             if (!nameInput || !urlInput) return alert("⚠️ MULTIVERSE ERROR: Designation and Protocol required.");
-
             try { new URL(urlInput); } catch (e) { return alert("⚠️ Invalid URL. Must include https://"); }
-
             const encodedName = encodeURIComponent(nameInput);
             const encodedUrl = encodeURIComponent(urlInput);
-
             if (gateway === 'stripe') {
                 const stripeBase = "https://buy.stripe.com/eVqaEWeI74KEddqbhgcIE03";
                 window.open(`${stripeBase}?prefilled_custom_field_value[0]=${encodedName}&prefilled_custom_field_value[1]=${encodedUrl}`, '_blank');
@@ -401,7 +411,6 @@
                 const cryptoBase = "https://nowpayments.io/payment/?iid=5817172284";
                 window.open(`${cryptoBase}&order_id=${encodedName}&order_description=${encodedUrl}`, '_blank');
             }
-            
             document.getElementById('newLinkName').value = '';
             document.getElementById('newLinkUrl').value = '';
         }
