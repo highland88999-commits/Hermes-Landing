@@ -49,7 +49,6 @@
         .video-box { width: 100%; height: 110px; background: #000; position: relative; }
         .masked-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: hue-rotate(10deg); }
         
-        /* Updated Label and Sub-Label Styles */
         .label-container { padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .label { color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
         .sub-label { color: var(--neon-cyan); font-size: 0.55rem; text-align: center; letter-spacing: 1px; opacity: 0.8; }
@@ -168,7 +167,7 @@
             { id: "afterlife", name: "Afterlife & Beyond" },
             { id: "abyssal", name: "Abyssal & Aquatic" },
             { id: "tech", name: "The Tech Stack" },
-            { id: "employment", name: "Employment & Careers" }, // Added Employment
+            { id: "employment", name: "Employment & Careers" },
             { id: "hardware", name: "Hardware & Auctions" },
             { id: "mobile", name: "Mobile & Comms" },
             { id: "apparel", name: "Elite Apparel" },
@@ -188,14 +187,15 @@
 
         const linkData = {
             core: [
+                { n: "Olympus B2B", u: "https://olympus-b2-b.vercel.app/", s: "Enterprise & Development Solutions" },
                 { n: "Olympus Core", u: "https://nexusvortex.ca" },
                 { n: "Artemis OS", u: "https://artemis-os.vercel.app/" },
                 { n: "The Flying Dutchman", u: "https://the-flying-dutchman.vercel.app/" },
                 { n: "Nexus Symbiote", u: "https://nexus-symbiote.onrender.com/" }
             ],
             featured: [
-                { n: "Pan's Labyrinth", u: "https://pan-s-labrynth.vercel.app/" }, // Added
-                { n: "Raptor Rush", u: "https://raptor-rush.vercel.app/" },       // Added
+                { n: "Pan's Labyrinth", u: "https://pan-s-labrynth.vercel.app/" },
+                { n: "Raptor Rush", u: "https://raptor-rush.vercel.app/" },
                 { n: "REM-PSI Mauve", u: "https://rem-psi-mauve.vercel.app/" },
                 { n: "Olympus LAC", u: "https://olympus-lac.vercel.app/" },
                 { n: "Architect Artemis", u: "https://architect-artemis.vercel.app/" },
@@ -215,20 +215,15 @@
                 { n: "Convergence Murex", u: "https://convergence-murex.vercel.app/" },
                 { n: "Artemis Hub", u: "https://artemis-hub.vercel.app/" }
             ],
-            employment: [ // New Section
+            employment: [
                 { n: "Indeed Canada", u: "https://ca.indeed.com" },
                 { n: "ZipRecruiter", u: "https://www.ziprecruiter.com" }
             ],
             food: [
-                { 
-                    n: "Instacart", 
-                    u: "https://shoppers.instacart.com/?referral=LAWS1AAFAA&utm_medium=copy&utm_source=instacart_referral&utm_campaign=supply_referral", 
-                    s: "Add Referral Code: LAWS1AAFAA" // Added subtext
-                },
+                { n: "Instacart", u: "https://shoppers.instacart.com/?referral=LAWS1AAFAA&utm_medium=copy&utm_source=instacart_referral&utm_campaign=supply_referral", s: "Use Referral: LAWS1AAFAA" },
                 { n: "SkipTheDishes", u: "https://www.skipthedishes.com" },
                 { n: "Uber Eats", u: "https://www.ubereats.com" }
             ],
-            // ... remaining categories remain same as your original code
             renewed: [
                 { n: "Aetheris Business Model", u: "https://aetheris-business-model.vercel.app/" },
                 { n: "Olympus Aetheris", u: "https://olympus-aetheris.vercel.app/" }
@@ -240,33 +235,26 @@
             ],
             tech: [
                 { n: "Google Workspace", u: "https://workspace.google.com" },
-                { n: "Microsoft 365", u: "https://www.office.com" },
                 { n: "GitHub", u: "https://github.com" },
-                { n: "Vercel", u: "https://vercel.com" },
-                { n: "Three.js Journey", u: "https://threejs-journey.com" }
+                { n: "Vercel", u: "https://vercel.com" }
             ],
             hardware: [
                 { n: "eBay Computer Auctions", u: "https://www.ebay.com/b/Computers-Tablets-Network-Hardware/58058/bn_1865247" },
                 { n: "Memory Express", u: "https://www.memoryexpress.com" },
                 { n: "Canada Computers", u: "https://www.canadacomputers.com" },
                 { n: "Newegg", u: "https://www.newegg.ca" },
-                { n: "GovDeals Auctions", u: "https://www.govdeals.com" },
-                { n: "Dell Refurbished", u: "https://www.dellrefurbished.ca" },
-                { n: "B&H Photo Video", u: "https://www.bhphotovideo.com" }
+                { n: "GovDeals Auctions", u: "https://www.govdeals.com" }
             ],
             mobile: [
                 { n: "Telus Mobility", u: "https://www.telus.com" },
                 { n: "Bell Canada", u: "https://www.bell.ca" },
                 { n: "Rogers Wireless", u: "https://www.rogers.com" },
-                { n: "Freedom Mobile", u: "https://www.freedommobile.ca" },
-                { n: "Spigen Accessories", u: "https://www.spigen.com" },
-                { n: "Dbrand Skins", u: "https://dbrand.com" }
+                { n: "Freedom Mobile", u: "https://www.freedommobile.ca" }
             ],
             apparel: [
                 { n: "Shein", u: "https://www.shein.com" },
                 { n: "Nike", u: "https://www.nike.com" },
-                { n: "Adidas", u: "https://www.adidas.ca" },
-                { n: "Zara", u: "https://www.zara.com" }
+                { n: "Adidas", u: "https://www.adidas.ca" }
             ],
             shoes: [
                 { n: "Foot Locker", u: "https://www.footlocker.ca" },
@@ -291,8 +279,7 @@
             ],
             pets: [
                 { n: "Chewy", u: "https://www.chewy.com" },
-                { n: "PetSmart", u: "https://www.petsmart.ca" },
-                { n: "Petco", u: "https://www.petco.com" }
+                { n: "PetSmart", u: "https://www.petsmart.ca" }
             ],
             leisure: [
                 { n: "Cineplex", u: "https://www.cineplex.com" },
@@ -339,21 +326,8 @@
             grid.innerHTML = '';
             
             const staticLinks = linkData[id] || [];
-            let dynamicLinks = [];
-            try {
-                const response = await fetch('api/links-archive.json');
-                if (response.ok) {
-                    const archive = await response.json();
-                    dynamicLinks = archive[id] || [];
-                }
-            } catch (e) { console.log("Dynamic archive not loaded."); }
-
-            const allLinks = [...staticLinks, ...dynamicLinks];
-
-            allLinks.forEach(item => {
-                // Check if there is subtext (s) to display
+            staticLinks.forEach(item => {
                 const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
-                
                 grid.innerHTML += `
                 <a href="${item.u}" target="_blank" class="hologram-card">
                     <div class="video-box"><video class="masked-video" muted loop playsinline autoplay><source src="${vidUrl}" type="video/mp4"></video></div>
