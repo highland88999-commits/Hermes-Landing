@@ -46,8 +46,10 @@
 
         .hologram-card { background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0,255,255,0.15); border-radius: 15px; text-decoration: none; overflow: hidden; transition: 0.4s; display: flex; flex-direction: column; pointer-events: auto; cursor: pointer; }
         .hologram-card:hover { transform: translateY(-8px); border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,255,255,0.4); }
-        .video-box { width: 100%; height: 110px; background: #000; position: relative; }
-        .masked-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: hue-rotate(10deg); }
+        
+        /* EMISSIVE LIGHT PARTICLE BOX AREA */
+        .particle-box { width: 100%; height: 110px; background: #000; position: relative; overflow: hidden; }
+        .card-particle-canvas { width: 100%; height: 100%; display: block; }
         
         .label-container { padding: 15px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .label { color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
@@ -56,6 +58,7 @@
         #obs-hint { position: fixed; bottom: 20px; width: 100%; text-align: center; color: rgba(0,255,255,0.4); font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; pointer-events: none; z-index: 5000; }
 
         .terminal-container { width: 100%; max-width: 800px; margin: 80px auto 40px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border: 1px solid var(--neon-cyan); border-radius: 8px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); overflow: hidden; pointer-events: auto; }
+        .terminal-container * { pointer-events: auto; }
         .terminal-header { background: rgba(0, 255, 255, 0.1); padding: 12px 20px; color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; }
         .pulse-dot { width: 8px; height: 8px; background: var(--neon-purple); border-radius: 50%; box-shadow: 0 0 10px var(--neon-purple); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
@@ -322,12 +325,80 @@
             ]
         };
 
-        const vidUrl = "https://files.catbox.moe/qnb2fw.mp4";
         const sidebar = document.getElementById('sidebar');
 
         categories.forEach(cat => {
             sidebar.innerHTML += `<a class="menu-link" id="link-${cat.id}" onclick="showSection('${cat.id}')">${cat.name}</a>`;
         });
+
+        // REVERSIBLE GENERATOR MATRIX FOR CARD PARTICLE CONTINUATION
+        function initCardParticles(canvas, uniqueSeed) {
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            // Generate unique parameters based on seed characteristics
+            const seedVal = uniqueSeed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const maxParticles = 25 + (seedVal % 15); 
+            const particles = [];
+
+            function resize() {
+                if (!canvas.isConnected) return;
+                canvas.width = canvas.offsetWidth || 180;
+                canvas.height = canvas.offsetHeight || 110;
+            }
+            resize();
+
+            for (let i = 0; i < maxParticles; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.sin(seedVal + i) * 0.4) + ((Math.random() - 0.5) * 0.3),
+                    vy: (Math.cos(seedVal + i) * 0.4) + ((Math.random() - 0.5) * 0.3),
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.5 + 0.3,
+                    alphaSpeed: 0.005 + (Math.random() * 0.005)
+                });
+            }
+
+            function frame() {
+                if (!canvas.isConnected) {
+                    cancelAnimationFrame(animationFrameId);
+                    return;
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Color mapping context matching brand spectrum (Cyan to Purple shifting hue gradient)
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, 'rgba(0, 255, 255, 0.15)');
+                grad.addColorStop(1, 'rgba(188, 19, 254, 0.05)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha += p.alphaSpeed;
+
+                    if (p.alpha > 0.85 || p.alpha < 0.2) p.alphaSpeed = -p.alphaSpeed;
+                    if (p.x < 0 || p.x > canvas.width) p.vx = -p.vx;
+                    if (p.y < 0 || p.y > canvas.height) p.vy = -p.vy;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    
+                    // Emissive glow effect simulation
+                    ctx.fillStyle = `rgba(0, 255, 255, ${Math.abs(p.alpha)})`;
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = '#00ffff';
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // reset
+                }
+                animationFrameId = requestAnimationFrame(frame);
+            }
+            frame();
+            window.addEventListener('resize', resize);
+        }
 
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
@@ -342,11 +413,13 @@
             grid.innerHTML = '';
             
             const staticLinks = linkData[id] || [];
-            staticLinks.forEach(item => {
+            staticLinks.forEach((item, index) => {
                 const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
                 grid.innerHTML += `
                 <a href="${item.u}" target="_blank" class="hologram-card">
-                    <div class="video-box"><video class="masked-video" muted loop playsinline autoplay><source src="${vidUrl}" type="video/mp4"></video></div>
+                    <div class="particle-box">
+                        <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
+                    </div>
                     <div class="label-container">
                         <div class="label">${item.n}</div>
                         ${subtextHtml}
@@ -354,7 +427,12 @@
                 </a>`;
             });
 
-            // Only show terminal on the core section
+            // Initialize the individual mathematical dancing grids instantly
+            staticLinks.forEach((item, index) => {
+                const cv = document.getElementById(`canvas-${id}-${index}`);
+                if (cv) initCardParticles(cv, item.n);
+            });
+
             if (id === 'core') {
                 terminal.style.display = 'block';
             } else {
@@ -376,18 +454,30 @@
                 document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
                 
+                const matches = [];
                 Object.values(linkData).flat().forEach(item => {
                     if(item.n.toLowerCase().includes(query)) {
-                        const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
-                        grid.innerHTML += `
-                        <a href="${item.u}" target="_blank" class="hologram-card">
-                            <div class="video-box"><video class="masked-video" muted loop playsinline autoplay><source src="${vidUrl}" type="video/mp4"></video></div>
-                            <div class="label-container">
-                                <div class="label">${item.n}</div>
-                                ${subtextHtml}
-                            </div>
-                        </a>`;
+                        matches.push(item);
                     }
+                });
+
+                matches.forEach((item, index) => {
+                    const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
+                    grid.innerHTML += `
+                    <a href="${item.u}" target="_blank" class="hologram-card">
+                        <div class="particle-box">
+                            <canvas class="card-particle-canvas" id="search-canvas-${index}"></canvas>
+                        </div>
+                        <div class="label-container">
+                            <div class="label">${item.n}</div>
+                            ${subtextHtml}
+                        </div>
+                    </a>`;
+                });
+
+                matches.forEach((item, index) => {
+                    const cv = document.getElementById(`search-canvas-${index}`);
+                    if (cv) initCardParticles(cv, item.n);
                 });
             } else {
                 showSection('core');
