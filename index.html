@@ -187,6 +187,21 @@
 
         const linkData = {
             core: [
+                { n: "Fortress of Solitude", u: "https://fortress-of-solitude.vercel.app" },
+                { n: "Light Particle Engine", u: "https://light-particle-engine.vercel.app" },
+                { n: "Medusa's Lair", u: "https://medusas-lair.vercel.app" },
+                { n: "Loki Kappa Seven", u: "https://loki-kappa-seven.vercel.app" },
+                { n: "Persymphony", u: "https://persymphony.vercel.app" },
+                { n: "Vortex Generator Delta", u: "https://vortex-generator-delta.vercel.app" },
+                { n: "Vortex Generation Portal", u: "https://vortex-generation-portal.vercel.app" },
+                { n: "The Hive", u: "https://the-hive-vert.vercel.app" },
+                { n: "Beekeeper", u: "https://beekeeper-chi.vercel.app" },
+                { n: "Nexus Vortex", u: "https://nexus-vortex.vercel.app" },
+                { n: "Olympus Social", u: "https://olympus-social.vercel.app" },
+                { n: "NV-2 Video Library", u: "https://nv-2-video-library.vercel.app" },
+                { n: "Olympian Chess", u: "https://olympian-chess.vercel.app" },
+                { n: "Olympus Map Node", u: "https://olympus-map-node.vercel.app" },
+                { n: "Prometheus Iota", u: "https://prometheus-iota-livid.vercel.app" },
                 { n: "Olympus B2B", u: "https://olympus-b2-b.vercel.app/", s: "Enterprise & Development Solutions" },
                 { n: "Olympus Core", u: "https://nexusvortex.ca" },
                 { n: "Artemis OS", u: "https://artemis-os.vercel.app/" },
@@ -317,6 +332,7 @@
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
+            const terminal = document.getElementById('submission-terminal');
             
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
             const activeLink = document.getElementById(`link-${id}`);
@@ -338,6 +354,13 @@
                 </a>`;
             });
 
+            // Only show terminal on the core section
+            if (id === 'core') {
+                terminal.style.display = 'block';
+            } else {
+                terminal.style.display = 'none';
+            }
+
             if(window.innerWidth < 1100 && sidebar.classList.contains('active')) toggleSidebar();
         }
 
@@ -345,9 +368,11 @@
             const query = document.getElementById('mallSearch').value.toLowerCase();
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
+            const terminal = document.getElementById('submission-terminal');
             
             if(query.length > 0) {
                 indicator.innerText = "Global Search Override";
+                terminal.style.display = 'none';
                 document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
                 
@@ -376,6 +401,7 @@
             const urlInput = document.getElementById('newLinkUrl').value.trim();
             if (!nameInput || !urlInput) return alert("⚠️ MULTIVERSE ERROR: Designation and Protocol required.");
             try { new URL(urlInput); } catch (e) { return alert("⚠️ Invalid URL. Must include https://"); }
+
             const encodedName = encodeURIComponent(nameInput);
             const encodedUrl = encodeURIComponent(urlInput);
             if (gateway === 'stripe') {
