@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OLYMPUS | GRAND MULTIVERSE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --neon-cyan: #00ffff;
@@ -30,8 +33,8 @@
         #mallSearch { width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1.5px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 30px; color: #fff; outline: none; box-shadow: var(--glow); font-size: 0.9rem; box-sizing: border-box; transition: 0.3s; }
         #mallSearch:focus { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
 
-        /* Improved Sidebar Scrolling */
-        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); border-right: 1px solid var(--neon-cyan); z-index: 4000; transition: var(--transition); padding: 100px 0 50px 0; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
+        /* Improved Sidebar Scrolling - Adjusted padding-bottom to clear footer */
+        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); border-right: 1px solid var(--neon-cyan); z-index: 4000; transition: var(--transition); padding: 100px 0 80px 0; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .sidebar::-webkit-scrollbar { width: 5px; }
         .sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
         .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; box-shadow: 0 0 8px var(--neon-cyan); }
@@ -40,8 +43,8 @@
         .menu-link { padding: 16px 30px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; border-bottom: 1px solid rgba(0,255,255,0.05); transition: 0.3s; cursor: pointer; }
         .menu-link:hover, .menu-link.active-link { color: var(--neon-cyan); background: rgba(0,255,255,0.05); padding-left: 40px; border-left: 3px solid var(--neon-cyan); }
 
-        /* Global scrollable viewport */
-        .viewport { flex-grow: 1; overflow-y: auto; padding: 20px 20px 100px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
+        /* Global scrollable viewport - Adjusted padding-bottom to 130px to clear footer safely */
+        .viewport { flex-grow: 1; overflow-y: auto; padding: 20px 20px 130px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .viewport::-webkit-scrollbar { width: 6px; }
         .viewport::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
         .viewport::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; box-shadow: 0 0 10px var(--neon-purple); }
@@ -79,6 +82,20 @@
         .stripe-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan); }
         .crypto-btn { background: transparent; color: var(--neon-purple); border: 1px solid var(--neon-purple); box-shadow: inset 0 0 10px rgba(188,19,254,0.1); }
         .crypto-btn:hover { background: var(--neon-purple); color: #000; box-shadow: 0 0 20px var(--neon-purple); }
+
+        /* Multiverse Tracker CSS Integration */
+        .cyber-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 12px 0;
+            background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(4px);
+            border-top: 1px solid rgba(0, 255, 255, 0.15); z-index: 9999;
+            font-family: 'Courier New', Courier, monospace; pointer-events: none;
+        }
+        .visit-count {
+            color: #00ffff; font-size: 0.75rem; font-weight: bold;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.8), 0 0 15px rgba(0, 255, 255, 0.4);
+            letter-spacing: 1.5px; text-transform: uppercase; pointer-events: auto;
+        }
+        .loading { animation: pulse 1.5s infinite; }
     </style>
 </head>
 <body>
@@ -121,6 +138,12 @@
             </div>
         </main>
     </div>
+
+    <footer class="cyber-footer">
+        <div class="visit-count" id="counter-display">
+            UPLINK ESTABLISHING <span class="loading">...</span>
+        </div>
+    </footer>
 
     <script type="importmap">
         {"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
@@ -566,6 +589,63 @@
         }
 
         window.onload = () => showSection('core');
+    </script>
+
+    <script>
+        const supabaseUrl = 'https://ezfwzqxwafvdjtwnmyrx.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        function getSafeVisitorId() {
+            let id = localStorage.getItem('nexus_visitor_id');
+            if (!id) {
+                if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                    id = crypto.randomUUID();
+                } else {
+                    id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+                }
+                localStorage.setItem('nexus_visitor_id', id);
+            }
+            return id;
+        }
+
+        async function updateMultiverseCount(isInitialLoad = false) {
+            const displayElement = document.getElementById('counter-display');
+            try {
+                const visitorId = getSafeVisitorId();
+
+                if (isInitialLoad) {
+                    await supabaseClient.rpc('track_ping', { p_ip_hash: visitorId });
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+
+                const { data: globalData } = await supabaseClient.from('global_stats').select('total_pings').single();
+                const { count: uniqueCount } = await supabaseClient.from('unique_visitors').select('*', { count: 'exact', head: true });
+
+                const total = globalData ? globalData.total_pings : 0;
+                const unique = uniqueCount !== null ? uniqueCount : 0;
+                
+                displayElement.innerHTML = `
+                    UNIQUE TRAVERSALS: [ <span style="color: #ff00ff; text-shadow: 0 0 10px #ff00ff;">${unique}</span> ] 
+                    <span style="opacity: 0.5; margin: 0 10px;">///</span> 
+                    TOTAL PINGS: [ <span style="color: #00ffff;">${total}</span> ]
+                `;
+                displayElement.classList.remove('loading');
+
+            } catch (error) {
+                console.error('Uplink failed:', error);
+                displayElement.innerHTML = `MULTIVERSE NODE: [ <span style="color: #ff3366;">OFFLINE</span> ]`;
+                displayElement.classList.remove('loading');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            updateMultiverseCount(true);
+            setInterval(() => updateMultiverseCount(false), 60000);
+        });
     </script>
 </body>
 </html>
