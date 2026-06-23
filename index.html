@@ -33,7 +33,7 @@
         #mallSearch { width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1.5px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 30px; color: #fff; outline: none; box-shadow: var(--glow); font-size: 0.9rem; box-sizing: border-box; transition: 0.3s; }
         #mallSearch:focus { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
 
-        /* Improved Sidebar Scrolling - Adjusted padding-bottom to clear footer */
+        /* Improved Sidebar Scrolling */
         .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); border-right: 1px solid var(--neon-cyan); z-index: 4000; transition: var(--transition); padding: 100px 0 80px 0; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .sidebar::-webkit-scrollbar { width: 5px; }
         .sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
@@ -43,7 +43,7 @@
         .menu-link { padding: 16px 30px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; border-bottom: 1px solid rgba(0,255,255,0.05); transition: 0.3s; cursor: pointer; }
         .menu-link:hover, .menu-link.active-link { color: var(--neon-cyan); background: rgba(0,255,255,0.05); padding-left: 40px; border-left: 3px solid var(--neon-cyan); }
 
-        /* Global scrollable viewport - Adjusted padding-bottom to 130px to clear footer safely */
+        /* Global scrollable viewport */
         .viewport { flex-grow: 1; overflow-y: auto; padding: 20px 20px 130px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .viewport::-webkit-scrollbar { width: 6px; }
         .viewport::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
@@ -63,7 +63,7 @@
         .label { color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .sub-label { color: var(--neon-cyan); font-size: 0.55rem; text-align: center; letter-spacing: 1px; opacity: 0.8; }
 
-        .terminal-container { width: 100%; max-width: 800px; margin: 80px auto 40px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border: 1px solid var(--neon-cyan); border-radius: 8px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); overflow: hidden; pointer-events: auto; }
+        .terminal-container { width: 100%; max-width: 800px; margin: 80px auto 40px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border: 1px solid var(--neon-cyan); border-radius: 8px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); overflow: hidden; pointer-events: auto; display: block; }
         .terminal-container * { pointer-events: auto; }
         .terminal-header { background: rgba(0, 255, 255, 0.1); padding: 12px 20px; color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; }
         .pulse-dot { width: 8px; height: 8px; background: var(--neon-purple); border-radius: 50%; box-shadow: 0 0 10px var(--neon-purple); animation: pulse 1.5s infinite; }
@@ -486,7 +486,6 @@
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
-            const terminal = document.getElementById('submission-terminal');
             
             document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
             const activeLink = document.getElementById(`link-${id}`);
@@ -516,12 +515,6 @@
                 if (cv) initCardParticles(cv, item.n);
             });
 
-            if (id === 'core') {
-                terminal.style.display = 'block';
-            } else {
-                terminal.style.display = 'none';
-            }
-
             if(window.innerWidth < 1100 && sidebar.classList.contains('active')) toggleSidebar();
         }
 
@@ -529,11 +522,9 @@
             const query = document.getElementById('mallSearch').value.toLowerCase();
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
-            const terminal = document.getElementById('submission-terminal');
             
             if(query.length > 0) {
                 indicator.innerHTML = `${olympusIconLarge} Global Search Override ${olympusIconLarge}`;
-                terminal.style.display = 'none';
                 document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
                 
