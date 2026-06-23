@@ -18,7 +18,8 @@
         }
 
         html { scroll-behavior: smooth; }
-        body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background: var(--black-bloom); font-family: 'Segoe UI', sans-serif; color: #fff; }
+        body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background: var(--black-bloom); font-family: 'Segoe UI', sans-serif; color: #fff; box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
 
         canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
 
@@ -30,26 +31,35 @@
         .menu-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 25px var(--neon-cyan); }
 
         .search-container { flex-grow: 1; max-width: 600px; margin: 0 auto; }
-        #mallSearch { width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1.5px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 30px; color: #fff; outline: none; box-shadow: var(--glow); font-size: 0.9rem; box-sizing: border-box; transition: 0.3s; }
+        #mallSearch { width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1.5px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 30px; color: #fff; outline: none; box-shadow: var(--glow); font-size: 0.9rem; transition: 0.3s; }
         #mallSearch:focus { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
 
-        /* Improved Sidebar Scrolling */
-        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); border-right: 1px solid var(--neon-cyan); z-index: 4000; transition: var(--transition); padding: 100px 0 80px 0; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
+        /* Sidebar Overlay */
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 3500; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+
+        /* Improved Sidebar Scrolling & Header */
+        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); border-right: 1px solid var(--neon-cyan); z-index: 4000; transition: var(--transition); padding: 30px 0 80px 0; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .sidebar::-webkit-scrollbar { width: 5px; }
         .sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
         .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; box-shadow: 0 0 8px var(--neon-cyan); }
         .sidebar.active { left: 0; }
         
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 0 25px 20px 25px; border-bottom: 1px solid rgba(0,255,255,0.1); margin-bottom: 10px; }
+        .sidebar-title { color: var(--neon-cyan); letter-spacing: 3px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; }
+        .close-sidebar { background: transparent; border: none; color: var(--neon-cyan); font-size: 1.5rem; cursor: pointer; transition: 0.3s; padding: 0; }
+        .close-sidebar:hover { color: var(--neon-purple); transform: scale(1.1); text-shadow: 0 0 10px var(--neon-purple); }
+
         .menu-link { padding: 16px 30px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; border-bottom: 1px solid rgba(0,255,255,0.05); transition: 0.3s; cursor: pointer; }
         .menu-link:hover, .menu-link.active-link { color: var(--neon-cyan); background: rgba(0,255,255,0.05); padding-left: 40px; border-left: 3px solid var(--neon-cyan); }
 
         /* Global scrollable viewport */
-        .viewport { flex-grow: 1; overflow-y: auto; padding: 20px 20px 130px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
+        .viewport { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 20px 130px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .viewport::-webkit-scrollbar { width: 6px; }
         .viewport::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
         .viewport::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; box-shadow: 0 0 10px var(--neon-purple); }
 
-        .cat-banner { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--neon-cyan); letter-spacing: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 50px; text-shadow: var(--glow); text-align: center; font-size: 1.5rem; pointer-events: none; }
+        .cat-banner { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--neon-cyan); letter-spacing: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 50px; text-shadow: var(--glow); text-align: center; font-size: clamp(1rem, 4vw, 1.5rem); pointer-events: none; width: 100%; }
 
         .icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 25px; width: 100%; max-width: 1500px; pointer-events: none; }
 
@@ -63,20 +73,21 @@
         .label { color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .sub-label { color: var(--neon-cyan); font-size: 0.55rem; text-align: center; letter-spacing: 1px; opacity: 0.8; }
 
-        .terminal-container { width: 100%; max-width: 800px; margin: 80px auto 40px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border: 1px solid var(--neon-cyan); border-radius: 8px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); overflow: hidden; pointer-events: auto; display: block; }
+        /* Centered Terminal Container */
+        .terminal-container { width: 90%; max-width: 800px; margin: 80px auto 40px; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(15px); border: 1px solid var(--neon-cyan); border-radius: 8px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); overflow: hidden; pointer-events: auto; text-align: center; }
         .terminal-container * { pointer-events: auto; }
-        .terminal-header { background: rgba(0, 255, 255, 0.1); padding: 12px 20px; color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; gap: 10px; font-weight: bold; }
-        .pulse-dot { width: 8px; height: 8px; background: var(--neon-purple); border-radius: 50%; box-shadow: 0 0 10px var(--neon-purple); animation: pulse 1.5s infinite; }
+        .terminal-header { background: rgba(0, 255, 255, 0.1); padding: 15px 20px; color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
+        .pulse-dot { width: 8px; height: 8px; background: var(--neon-purple); border-radius: 50%; box-shadow: 0 0 10px var(--neon-purple); animation: pulse 1.5s infinite; flex-shrink: 0; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         
-        .terminal-body { padding: 30px; }
-        .terminal-text { color: #aaa; font-family: monospace; font-size: 0.85rem; margin-bottom: 25px; text-transform: uppercase; }
+        .terminal-body { padding: 30px 20px; }
+        .terminal-text { color: #aaa; font-family: monospace; font-size: 0.85rem; margin-bottom: 25px; text-transform: uppercase; text-align: center; line-height: 1.5; }
         
-        .input-matrix { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
-        .input-matrix input { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 255, 255, 0.3); padding: 15px; color: #fff; font-family: 'Segoe UI', sans-serif; font-size: 0.9rem; border-radius: 4px; outline: none; transition: 0.3s; }
+        .input-matrix { display: flex; flex-direction: column; gap: 15px; margin: 0 auto 25px auto; width: 100%; max-width: 500px; }
+        .input-matrix input { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0, 255, 255, 0.3); padding: 15px; color: #fff; font-family: 'Segoe UI', sans-serif; font-size: 0.9rem; border-radius: 4px; outline: none; transition: 0.3s; text-align: center; width: 100%; }
         .input-matrix input:focus { border-color: var(--neon-purple); box-shadow: 0 0 15px rgba(188, 19, 254, 0.3); }
 
-        .gateway-matrix { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .gateway-matrix { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 600px; margin: 0 auto; }
         .cyber-btn { flex: 1; min-width: 200px; padding: 15px; font-weight: bold; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase; border: none; cursor: pointer; transition: var(--transition); border-radius: 4px; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .stripe-btn { background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); box-shadow: inset 0 0 10px rgba(0,255,255,0.1); }
         .stripe-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan); }
@@ -110,7 +121,15 @@
             </div>
         </header>
 
-        <nav class="sidebar" id="sidebar"></nav>
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">DIRECTORY</span>
+                <button class="close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="sidebar-links"></div>
+        </nav>
 
         <main class="viewport" id="viewport">
             <div class="cat-banner" id="cat-indicator"></div>
@@ -123,7 +142,7 @@
                 <div class="terminal-body">
                     <p class="terminal-text">>> INITIALIZE LINK DEPLOYMENT. NO DUPLICATES ALLOWED. $2.00 PERMANENT INDEXING.</p>
                     <div class="input-matrix">
-                        <input type="text" id="newLinkName" placeholder="ENTER PLATFORM DESIGNATION (NAME)" autocomplete="off">
+                        <input type="text" id="newLinkName" placeholder="ENTER PLATFORM DESIGNATION" autocomplete="off">
                         <input type="url" id="newLinkUrl" placeholder="ENTER SECURE PROTOCOL (HTTPS://...)" autocomplete="off">
                     </div>
                     <div id="gateway-matrix" class="gateway-matrix">
@@ -131,7 +150,7 @@
                             <i class="fa-brands fa-stripe-s"></i> STRIPE (FIAT)
                         </button>
                         <button class="cyber-btn crypto-btn" onclick="processGateway('crypto')">
-                            <i class="fa-brands fa-bitcoin"></i> NOWPAYMENTS (CRYPTO)
+                            <i class="fa-brands fa-bitcoin"></i> CRYPTO
                         </button>
                     </div>
                 </div>
@@ -209,13 +228,9 @@
 
         function animate() { 
             requestAnimationFrame(animate); 
-            // Slowly rotate entire particle field
             particlesMesh.rotation.y += 0.001;
             particlesMesh.rotation.x += 0.0005;
-            
-            // Smoothly lerp towards target color
             material.color.lerp(targetColor, 0.015);
-
             renderer.render(scene, camera); 
         }
         animate();
@@ -403,10 +418,10 @@
             ]
         };
 
-        const sidebar = document.getElementById('sidebar');
+        const sidebarLinks = document.getElementById('sidebar-links');
 
         categories.forEach(cat => {
-            sidebar.innerHTML += `<a class="menu-link" id="link-${cat.id}" onclick="showSection('${cat.id}')">${olympusIcon} ${cat.name}</a>`;
+            sidebarLinks.innerHTML += `<a class="menu-link" id="link-${cat.id}" onclick="showSection('${cat.id}')">${olympusIcon} ${cat.name}</a>`;
         });
 
         // VORTEX CLOCKWISE GENERATOR MATRIX
@@ -415,7 +430,7 @@
             let animationFrameId;
 
             const seedVal = uniqueSeed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const maxParticles = 80 + (seedVal % 40); // Increased particle count
+            const maxParticles = 80 + (seedVal % 40);
             const particles = [];
 
             function resize() {
@@ -429,7 +444,7 @@
                 particles.push({
                     angle: Math.random() * Math.PI * 2,
                     radius: Math.random() * (canvas.width / 1.2),
-                    speed: 0.005 + (Math.random() * 0.015), // Clockwise angular velocity
+                    speed: 0.005 + (Math.random() * 0.015),
                     wobbleOffset: Math.random() * Math.PI * 2,
                     wobbleSpeed: 0.02 + Math.random() * 0.03,
                     size: Math.random() * 1.5 + 0.5,
@@ -457,7 +472,6 @@
                 for (let i = 0; i < particles.length; i++) {
                     const p = particles[i];
                     
-                    // Vortex logic
                     p.angle += p.speed; 
                     p.wobbleOffset += p.wobbleSpeed;
                     const currentRadius = p.radius + Math.sin(p.wobbleOffset) * 15;
@@ -465,7 +479,6 @@
                     p.x = cx + Math.cos(p.angle) * currentRadius;
                     p.y = cy + Math.sin(p.angle) * currentRadius;
 
-                    // Fade pulsing
                     p.alpha += p.alphaSpeed;
                     if (p.alpha > 0.85 || p.alpha < 0.2) p.alphaSpeed = -p.alphaSpeed;
 
@@ -515,7 +528,7 @@
                 if (cv) initCardParticles(cv, item.n);
             });
 
-            if(window.innerWidth < 1100 && sidebar.classList.contains('active')) toggleSidebar();
+            if(window.innerWidth < 1100 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
         }
 
         function searchMall() {
@@ -558,7 +571,10 @@
             }
         }
 
-        function toggleSidebar() { sidebar.classList.toggle('active'); }
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('active'); 
+            document.getElementById('sidebar-overlay').classList.toggle('active'); 
+        }
 
         function processGateway(gateway) {
             const nameInput = document.getElementById('newLinkName').value.trim();
