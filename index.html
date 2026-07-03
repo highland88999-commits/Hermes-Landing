@@ -18,40 +18,26 @@
         }
 
         html { scroll-behavior: smooth; }
-        body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background: var(--black-bloom); font-family: 'Segoe UI', sans-serif; color: #fff; box-sizing: border-box; }
+        body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background: var(--black-bloom); font-family: 'Segoe UI', sans-serif; color: #fff; box-sizing: border-box; overscroll-behavior: none; }
         *, *:before, *:after { box-sizing: inherit; }
 
         canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
 
         .ui-master { position: fixed; inset: 0; opacity: 1; pointer-events: none; z-index: 2; display: flex; flex-direction: column; }
         
-        .nav-header { padding: 20px; display: flex; align-items: center; gap: 15px; z-index: 3000; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); pointer-events: auto; }
+        .nav-header { padding: 20px 20px 10px 20px; display: flex; flex-direction: column; gap: 15px; z-index: 3000; background: linear-gradient(to bottom, rgba(0,0,0,0.95) 50%, rgba(0,0,0,0.8)); pointer-events: auto; }
 
-        .menu-btn { width: 50px; height: 50px; flex-shrink: 0; background: rgba(0,0,0,0.8); border: 1.5px solid var(--neon-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--neon-cyan); font-size: 1.2rem; cursor: pointer; box-shadow: var(--glow); transition: 0.3s; }
-        .menu-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 25px var(--neon-cyan); }
-
-        .search-container { flex-grow: 1; max-width: 600px; margin: 0 auto; }
+        .search-container { width: 100%; max-width: 600px; margin: 0 auto; }
         #mallSearch { width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1.5px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 30px; color: #fff; outline: none; box-shadow: var(--glow); font-size: 0.9rem; transition: 0.3s; }
         #mallSearch:focus { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
 
-        /* Sidebar Overlay */
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 3500; opacity: 0; pointer-events: none; transition: var(--transition); }
-        .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
-
-        /* Improved Sidebar Scrolling & Header */
-        .sidebar { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(30px); border-right: 1px solid var(--neon-cyan); z-index: 4000; transition: var(--transition); padding: 30px 0 80px 0; overflow-y: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
-        .sidebar::-webkit-scrollbar { width: 5px; }
-        .sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 4px; box-shadow: 0 0 8px var(--neon-cyan); }
-        .sidebar.active { left: 0; }
+        /* Horizontal Carousel Navigation */
+        .category-carousel { display: flex; gap: 12px; overflow-x: auto; padding: 5px 20px 15px 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid rgba(0,255,255,0.1); background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); pointer-events: auto; }
+        .category-carousel::-webkit-scrollbar { display: none; }
         
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 0 25px 20px 25px; border-bottom: 1px solid rgba(0,255,255,0.1); margin-bottom: 10px; }
-        .sidebar-title { color: var(--neon-cyan); letter-spacing: 3px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; }
-        .close-sidebar { background: transparent; border: none; color: var(--neon-cyan); font-size: 1.5rem; cursor: pointer; transition: 0.3s; padding: 0; }
-        .close-sidebar:hover { color: var(--neon-purple); transform: scale(1.1); text-shadow: 0 0 10px var(--neon-purple); }
-
-        .menu-link { padding: 16px 30px; display: flex; align-items: center; gap: 10px; color: #aaa; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.7rem; border-bottom: 1px solid rgba(0,255,255,0.05); transition: 0.3s; cursor: pointer; }
-        .menu-link:hover, .menu-link.active-link { color: var(--neon-cyan); background: rgba(0,255,255,0.05); padding-left: 40px; border-left: 3px solid var(--neon-cyan); }
+        .carousel-btn { flex-shrink: 0; padding: 10px 20px; background: rgba(15, 15, 20, 0.6); backdrop-filter: blur(5px); border: 1px solid rgba(0,255,255,0.2); border-radius: 20px; color: #aaa; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; cursor: pointer; transition: var(--transition); scroll-snap-align: center; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+        .carousel-btn:hover { border-color: var(--neon-cyan); color: #fff; }
+        .carousel-btn.active-link { background: rgba(0,255,255,0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: inset 0 0 10px rgba(0,255,255,0.2), 0 0 15px rgba(0,255,255,0.3); font-weight: bold; }
 
         /* Global scrollable viewport */
         .viewport { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 20px 130px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
@@ -59,7 +45,7 @@
         .viewport::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
         .viewport::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; box-shadow: 0 0 10px var(--neon-purple); }
 
-        .cat-banner { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--neon-cyan); letter-spacing: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 50px; text-shadow: var(--glow); text-align: center; font-size: clamp(1rem, 4vw, 1.5rem); pointer-events: none; width: 100%; }
+        .cat-banner { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--neon-cyan); letter-spacing: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 50px; text-shadow: var(--glow); text-align: center; font-size: clamp(1rem, 4vw, 1.5rem); pointer-events: none; width: 100%; transition: opacity 0.3s; }
 
         .icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 25px; width: 100%; max-width: 1500px; pointer-events: none; }
 
@@ -94,7 +80,6 @@
         .crypto-btn { background: transparent; color: var(--neon-purple); border: 1px solid var(--neon-purple); box-shadow: inset 0 0 10px rgba(188,19,254,0.1); }
         .crypto-btn:hover { background: var(--neon-purple); color: #000; box-shadow: 0 0 20px var(--neon-purple); }
 
-        /* Multiverse Tracker CSS Integration */
         .cyber-footer {
             position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 12px 0;
             background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(4px);
@@ -107,6 +92,10 @@
             letter-spacing: 1.5px; text-transform: uppercase; pointer-events: auto;
         }
         .loading { animation: pulse 1.5s infinite; }
+        
+        /* Swipe Animation classes */
+        .swipe-fade-out { opacity: 0; transform: scale(0.98); transition: opacity 0.2s, transform 0.2s; }
+        .swipe-fade-in { opacity: 1; transform: scale(1); transition: opacity 0.3s, transform 0.3s; }
     </style>
 </head>
 <body>
@@ -115,21 +104,13 @@
 
     <div id="ui-master" class="ui-master">
         <header class="nav-header" id="nav-header">
-            <button class="menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
             <div class="search-container">
                 <input type="text" id="mallSearch" placeholder="SEARCH ENTIRE DIRECTORY..." onkeyup="searchMall()">
             </div>
         </header>
 
-        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <span class="sidebar-title">DIRECTORY</span>
-                <button class="close-sidebar" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
+        <div class="category-carousel" id="category-carousel">
             </div>
-            <div id="sidebar-links"></div>
-        </nav>
 
         <main class="viewport" id="viewport">
             <div class="cat-banner" id="cat-indicator"></div>
@@ -175,12 +156,10 @@
         const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('galaxy-canvas'), antialias:true, alpha:true});
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // 6 Custom Colors
         const galaxyColors = [0x00ffff, 0xbc13fe, 0xff00ff, 0x00ff00, 0xffaa00, 0xff0000];
         let colorIndex = 0;
         const targetColor = new THREE.Color(galaxyColors[0]);
 
-        // Background Particles
         const geometry = new THREE.BufferGeometry();
         const vertices = [];
         for (let i = 0; i < 25000; i++) vertices.push(THREE.MathUtils.randFloatSpread(6000), THREE.MathUtils.randFloatSpread(6000), THREE.MathUtils.randFloatSpread(6000));
@@ -189,7 +168,6 @@
         const particlesMesh = new THREE.Points(geometry, material);
         scene.add(particlesMesh);
 
-        // Eye of Horus (Gold and Silver SVG texture)
         const svgEye = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150">
               <defs>
@@ -220,7 +198,6 @@
         scene.add(new THREE.PointLight(0x00ffff, 4, 4000)); scene.add(new THREE.AmbientLight(0x111111));
         camera.position.z = 1200;
 
-        // Auto change color every 10 seconds
         setInterval(() => {
             colorIndex = (colorIndex + 1) % galaxyColors.length;
             targetColor.setHex(galaxyColors[colorIndex]);
@@ -243,16 +220,15 @@
     </script>
 
     <script>
-        // Custom SVG mapping (Valkyrie Wings + Heart + Lightning Bolt)
         const olympusIcon = `
-            <svg viewBox="0 0 100 100" width="18" height="18" style="flex-shrink: 0; filter: drop-shadow(0 0 3px var(--neon-cyan));">
-                <path d="M30,35 Q10,20 5,10 Q20,25 25,45 Z" fill="var(--neon-cyan)"/>
-                <path d="M70,35 Q90,20 95,10 Q80,25 75,45 Z" fill="var(--neon-cyan)"/>
+            <svg viewBox="0 0 100 100" width="16" height="16" style="flex-shrink: 0; filter: drop-shadow(0 0 3px var(--neon-cyan));">
+                <path d="M30,35 Q10,20 5,10 Q20,25 25,45 Z" fill="currentColor"/>
+                <path d="M70,35 Q90,20 95,10 Q80,25 75,45 Z" fill="currentColor"/>
                 <path d="M50,85 C50,85 15,55 15,35 A15,15 0 0,1 50,25 A15,15 0 0,1 85,35 C85,55 50,85 50,85 Z" fill="none" stroke="var(--neon-purple)" stroke-width="8"/>
-                <path d="M55,10 L35,50 L55,50 L45,90 L65,45 L45,45 Z" fill="var(--neon-cyan)"/>
+                <path d="M55,10 L35,50 L55,50 L45,90 L65,45 L45,45 Z" fill="currentColor"/>
             </svg>`;
             
-        const olympusIconLarge = olympusIcon.replace('width="18" height="18"', 'width="35" height="35"');
+        const olympusIconLarge = olympusIcon.replace('width="16" height="16"', 'width="35" height="35"').replace(/currentColor/g, 'var(--neon-cyan)');
 
         const categories = [
             { id: "core", name: "Multiverse Core" },
@@ -278,6 +254,8 @@
             { id: "entertainment", name: "Media & Entertainment" },
             { id: "kids", name: "Kids Zone" }
         ];
+
+        let currentCategoryIndex = 0;
 
         const linkData = {
             core: [
@@ -418,13 +396,13 @@
             ]
         };
 
-        const sidebarLinks = document.getElementById('sidebar-links');
+        const carouselContainer = document.getElementById('category-carousel');
 
-        categories.forEach(cat => {
-            sidebarLinks.innerHTML += `<a class="menu-link" id="link-${cat.id}" onclick="showSection('${cat.id}')">${olympusIcon} ${cat.name}</a>`;
+        // Populate Carousel
+        categories.forEach((cat, index) => {
+            carouselContainer.innerHTML += `<button class="carousel-btn" id="btn-${cat.id}" onclick="showSection('${cat.id}')">${olympusIcon} ${cat.name}</button>`;
         });
 
-        // VORTEX CLOCKWISE GENERATOR MATRIX
         function initCardParticles(canvas, uniqueSeed) {
             const ctx = canvas.getContext('2d');
             let animationFrameId;
@@ -500,35 +478,50 @@
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
             
-            document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
-            const activeLink = document.getElementById(`link-${id}`);
-            if(activeLink) activeLink.classList.add('active-link');
+            // Sync Current Index
+            currentCategoryIndex = categories.findIndex(c => c.id === id);
+
+            document.querySelectorAll('.carousel-btn').forEach(el => el.classList.remove('active-link'));
+            const activeBtn = document.getElementById(`btn-${id}`);
+            if(activeBtn) {
+                activeBtn.classList.add('active-link');
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
             
-            const categoryName = categories.find(c => c.id === id)?.name || id;
+            const categoryName = categories[currentCategoryIndex]?.name || id;
             indicator.innerHTML = `${olympusIconLarge} ${categoryName} ${olympusIconLarge}`;
-            grid.innerHTML = '';
             
-            const staticLinks = linkData[id] || [];
-            staticLinks.forEach((item, index) => {
-                const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
-                grid.innerHTML += `
-                <a href="${item.u}" target="_blank" class="hologram-card">
-                    <div class="particle-box">
-                        <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
-                    </div>
-                    <div class="label-container">
-                        <div class="label">${olympusIcon} ${item.n}</div>
-                        ${subtextHtml}
-                    </div>
-                </a>`;
-            });
+            // Fade Out / Fade In Effect
+            grid.classList.add('swipe-fade-out');
+            
+            setTimeout(() => {
+                grid.innerHTML = '';
+                const staticLinks = linkData[id] || [];
+                
+                staticLinks.forEach((item, index) => {
+                    const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
+                    grid.innerHTML += `
+                    <a href="${item.u}" target="_blank" class="hologram-card">
+                        <div class="particle-box">
+                            <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
+                        </div>
+                        <div class="label-container">
+                            <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.n}</div>
+                            ${subtextHtml}
+                        </div>
+                    </a>`;
+                });
 
-            staticLinks.forEach((item, index) => {
-                const cv = document.getElementById(`canvas-${id}-${index}`);
-                if (cv) initCardParticles(cv, item.n);
-            });
+                staticLinks.forEach((item, index) => {
+                    const cv = document.getElementById(`canvas-${id}-${index}`);
+                    if (cv) initCardParticles(cv, item.n);
+                });
 
-            if(window.innerWidth < 1100 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
+                grid.classList.remove('swipe-fade-out');
+                grid.classList.add('swipe-fade-in');
+                
+                setTimeout(() => grid.classList.remove('swipe-fade-in'), 300);
+            }, 200);
         }
 
         function searchMall() {
@@ -538,7 +531,7 @@
             
             if(query.length > 0) {
                 indicator.innerHTML = `${olympusIconLarge} Global Search Override ${olympusIconLarge}`;
-                document.querySelectorAll('.menu-link').forEach(el => el.classList.remove('active-link'));
+                document.querySelectorAll('.carousel-btn').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
                 
                 const matches = [];
@@ -556,7 +549,7 @@
                             <canvas class="card-particle-canvas" id="search-canvas-${index}"></canvas>
                         </div>
                         <div class="label-container">
-                            <div class="label">${olympusIcon} ${item.n}</div>
+                            <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.n}</div>
                             ${subtextHtml}
                         </div>
                     </a>`;
@@ -567,13 +560,38 @@
                     if (cv) initCardParticles(cv, item.n);
                 });
             } else {
-                showSection('core');
+                showSection(categories[currentCategoryIndex].id);
             }
         }
 
-        function toggleSidebar() { 
-            document.getElementById('sidebar').classList.toggle('active'); 
-            document.getElementById('sidebar-overlay').classList.toggle('active'); 
+        // --- SWIPE GESTURE LOGIC ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const viewport = document.getElementById('viewport');
+
+        viewport.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        viewport.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            const swipeThreshold = 60; // Minimum distance to register a swipe
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swiped Left -> Go to Next Category
+                let nextIndex = currentCategoryIndex + 1;
+                if (nextIndex >= categories.length) nextIndex = 0;
+                showSection(categories[nextIndex].id);
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                // Swiped Right -> Go to Previous Category
+                let prevIndex = currentCategoryIndex - 1;
+                if (prevIndex < 0) prevIndex = categories.length - 1;
+                showSection(categories[prevIndex].id);
+            }
         }
 
         function processGateway(gateway) {
