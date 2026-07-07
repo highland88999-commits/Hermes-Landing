@@ -13,6 +13,8 @@
             --neon-cyan: #00ffff;
             --neon-purple: #bc13fe;
             --black-bloom: #050505;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
             --glow: 0 0 20px rgba(0,255,255,0.4);
             --transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         }
@@ -23,7 +25,14 @@
 
         canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
 
-        .ui-master { position: fixed; inset: 0; opacity: 1; pointer-events: none; z-index: 2; display: flex; flex-direction: column; }
+        /* Eye of Horus Background Overlay */
+        #eye-container {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 2; width: clamp(300px, 50vw, 600px); height: clamp(300px, 50vw, 600px); 
+            opacity: 0.15; pointer-events: none; filter: drop-shadow(0 0 30px var(--gold));
+        }
+
+        .ui-master { position: fixed; inset: 0; opacity: 1; pointer-events: none; z-index: 3; display: flex; flex-direction: column; }
         
         .nav-header { padding: 20px 20px 10px 20px; display: flex; flex-direction: column; gap: 15px; z-index: 3000; background: linear-gradient(to bottom, rgba(0,0,0,0.95) 50%, rgba(0,0,0,0.8)); pointer-events: auto; }
 
@@ -40,14 +49,25 @@
         .carousel-btn.active-link { background: rgba(0,255,255,0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: inset 0 0 10px rgba(0,255,255,0.2), 0 0 15px rgba(0,255,255,0.3); font-weight: bold; }
 
         /* Global scrollable viewport */
-        .viewport { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 20px 130px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
+        .viewport { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 20px 100px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .viewport::-webkit-scrollbar { width: 6px; }
         .viewport::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
         .viewport::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; box-shadow: 0 0 10px var(--neon-purple); }
 
-        .cat-banner { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--neon-cyan); letter-spacing: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 50px; text-shadow: var(--glow); text-align: center; font-size: clamp(1rem, 4vw, 1.5rem); pointer-events: none; width: 100%; transition: opacity 0.3s; }
+        .cat-banner { display: flex; align-items: center; justify-content: center; gap: 15px; color: var(--neon-cyan); letter-spacing: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; text-shadow: var(--glow); text-align: center; font-size: clamp(1rem, 4vw, 1.5rem); pointer-events: none; width: 100%; transition: opacity 0.3s; }
 
         .icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 25px; width: 100%; max-width: 1500px; pointer-events: none; }
+
+        /* Glassmorphism Holoframe for the Home Route */
+        .holoframe-container {
+            width: 100%; height: 70vh; min-height: 550px; max-width: 1400px; margin: 0 auto;
+            background: rgba(10, 10, 15, 0.65); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.15), inset 0 0 20px rgba(188, 19, 254, 0.1);
+            overflow: hidden; display: flex; flex-direction: column; pointer-events: auto;
+            transition: var(--transition);
+        }
+        .holoframe-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
 
         .hologram-card { background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0,255,255,0.15); border-radius: 15px; text-decoration: none; overflow: hidden; transition: 0.4s; display: flex; flex-direction: column; pointer-events: auto; cursor: pointer; }
         .hologram-card:hover { transform: translateY(-8px); border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,255,255,0.4); }
@@ -64,7 +84,6 @@
         .terminal-container * { pointer-events: auto; }
         .terminal-header { background: rgba(0, 255, 255, 0.1); padding: 15px 20px; color: var(--neon-cyan); font-size: 0.8rem; letter-spacing: 3px; border-bottom: 1px solid rgba(0, 255, 255, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: bold; }
         .pulse-dot { width: 8px; height: 8px; background: var(--neon-purple); border-radius: 50%; box-shadow: 0 0 10px var(--neon-purple); animation: pulse 1.5s infinite; flex-shrink: 0; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         
         .terminal-body { padding: 30px 20px; }
         .terminal-text { color: #aaa; font-family: monospace; font-size: 0.85rem; margin-bottom: 25px; text-transform: uppercase; text-align: center; line-height: 1.5; }
@@ -80,6 +99,15 @@
         .crypto-btn { background: transparent; color: var(--neon-purple); border: 1px solid var(--neon-purple); box-shadow: inset 0 0 10px rgba(188,19,254,0.1); }
         .crypto-btn:hover { background: var(--neon-purple); color: #000; box-shadow: 0 0 20px var(--neon-purple); }
 
+        /* Swipe Indicator */
+        .swipe-indicator {
+            position: fixed; bottom: 55px; left: 50%; transform: translateX(-50%);
+            color: var(--neon-cyan); font-size: 0.75rem; letter-spacing: 4px; font-weight: bold;
+            text-transform: uppercase; pointer-events: none; z-index: 9998;
+            animation: pulse-opacity 2s infinite; text-shadow: var(--glow);
+            display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center;
+        }
+
         .cyber-footer {
             position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 12px 0;
             background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(4px);
@@ -91,9 +119,10 @@
             text-shadow: 0 0 8px rgba(0, 255, 255, 0.8), 0 0 15px rgba(0, 255, 255, 0.4);
             letter-spacing: 1.5px; text-transform: uppercase; pointer-events: auto;
         }
-        .loading { animation: pulse 1.5s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes pulse-opacity { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 15px var(--neon-cyan); } }
         
-        /* Swipe Animation classes */
         .swipe-fade-out { opacity: 0; transform: scale(0.98); transition: opacity 0.2s, transform 0.2s; }
         .swipe-fade-in { opacity: 1; transform: scale(1); transition: opacity 0.3s, transform 0.3s; }
     </style>
@@ -101,6 +130,19 @@
 <body>
 
     <canvas id="galaxy-canvas"></canvas>
+
+    <div id="eye-container">
+        <svg viewBox="0 0 100 100" fill="none" stroke="url(#gradient)" stroke-width="2">
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:var(--gold)" />
+                    <stop offset="100%" style="stop-color:var(--silver)" />
+                </linearGradient>
+            </defs>
+            <path d="M20,50 Q50,20 80,50 T20,50 M50,50 A10,10 0 1,0 50,51 M50,40 L50,80 M50,80 Q70,90 80,70" />
+            <path d="M45,20 L35,50 L50,50 L40,80" stroke="var(--neon-cyan)" fill="none" stroke-width="2" style="filter: drop-shadow(0 0 5px var(--neon-cyan));" />
+        </svg>
+    </div>
 
     <div id="ui-master" class="ui-master">
         <header class="nav-header" id="nav-header">
@@ -114,6 +156,7 @@
 
         <main class="viewport" id="viewport">
             <div class="cat-banner" id="cat-indicator"></div>
+            
             <div class="icon-grid" id="mallGrid"></div>
 
             <div id="submission-terminal" class="terminal-container">
@@ -137,6 +180,10 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <div class="swipe-indicator">
+        <i class="fa-solid fa-angles-left"></i> SWIPE TO NAVIGATE <i class="fa-solid fa-angles-right"></i>
     </div>
 
     <footer class="cyber-footer">
@@ -167,33 +214,6 @@
         const material = new THREE.PointsMaterial({ color: 0x00ffff, size: 1.2, transparent: true, opacity: 0.7 });
         const particlesMesh = new THREE.Points(geometry, material);
         scene.add(particlesMesh);
-
-        const svgEye = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150">
-              <defs>
-                <linearGradient id="gs" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FFD700" />
-                  <stop offset="50%" stop-color="#C0C0C0" />
-                  <stop offset="100%" stop-color="#DAA520" />
-                </linearGradient>
-                <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-              </defs>
-              <g stroke="url(#gs)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
-                <path d="M 20 40 Q 90 10 180 50" />
-                <path d="M 30 70 Q 100 30 170 80" />
-                <path d="M 30 70 Q 100 100 170 80" />
-                <circle cx="100" cy="65" r="15" fill="url(#gs)" />
-                <path d="M 100 90 L 100 140" />
-                <path d="M 100 90 C 80 120 50 120 40 100" />
-              </g>
-            </svg>`;
-        const eyeUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgEye);
-        const textureLoader = new THREE.TextureLoader();
-        const eyeTexture = textureLoader.load(eyeUri);
-        const eyeMaterial = new THREE.SpriteMaterial({ map: eyeTexture, color: 0xffffff });
-        const horusEye = new THREE.Sprite(eyeMaterial);
-        horusEye.scale.set(300, 225, 1);
-        scene.add(horusEye);
 
         scene.add(new THREE.PointLight(0x00ffff, 4, 4000)); scene.add(new THREE.AmbientLight(0x111111));
         camera.position.z = 1200;
@@ -231,6 +251,7 @@
         const olympusIconLarge = olympusIcon.replace('width="16" height="16"', 'width="35" height="35"').replace(/currentColor/g, 'var(--neon-cyan)');
 
         const categories = [
+            { id: "about_home", name: "Home" },
             { id: "core", name: "Multiverse Core" },
             { id: "featured", name: "Olympus Featured" },
             { id: "renewed", name: "A Renewed World" },
@@ -245,7 +266,7 @@
             { id: "jewelry", name: "Jewelry Vault" },
             { id: "watches", name: "Horology & Watches" },
             { id: "beauty", name: "Health & Aesthetics" },
-            { id: "home", name: "Home & Habitat" },
+            { id: "home_goods", name: "Home & Habitat" },
             { id: "pets", name: "Pet Companions" },
             { id: "leisure", name: "Leisure & Attractions" },
             { id: "food", name: "Global Food Ops" },
@@ -304,96 +325,26 @@
                 { n: "Convergence Murex", u: "https://convergence-murex.vercel.app/" },
                 { n: "Artemis Hub", u: "https://artemis-hub.vercel.app/" }
             ],
-            employment: [
-                { n: "Indeed Canada", u: "https://ca.indeed.com" },
-                { n: "ZipRecruiter", u: "https://www.ziprecruiter.com" }
-            ],
-            food: [
-                { n: "Instacart", u: "https://shoppers.instacart.com/?referral=LAWS1AAFAA&utm_medium=copy&utm_source=instacart_referral&utm_campaign=supply_referral", s: "Use Referral: LAWS1AAFAA" },
-                { n: "SkipTheDishes", u: "https://www.skipthedishes.com" },
-                { n: "Uber Eats", u: "https://www.ubereats.com" }
-            ],
-            renewed: [
-                { n: "Aetheris Business Model", u: "https://aetheris-business-model.vercel.app/" },
-                { n: "Olympus Aetheris", u: "https://olympus-aetheris.vercel.app/" }
-            ],
+            employment: [ { n: "Indeed Canada", u: "https://ca.indeed.com" }, { n: "ZipRecruiter", u: "https://www.ziprecruiter.com" } ],
+            food: [ { n: "Instacart", u: "https://shoppers.instacart.com/?referral=LAWS1AAFAA&utm_medium=copy&utm_source=instacart_referral&utm_campaign=supply_referral", s: "Use Referral: LAWS1AAFAA" }, { n: "SkipTheDishes", u: "https://www.skipthedishes.com" }, { n: "Uber Eats", u: "https://www.ubereats.com" } ],
+            renewed: [ { n: "Aetheris Business Model", u: "https://aetheris-business-model.vercel.app/" }, { n: "Olympus Aetheris", u: "https://olympus-aetheris.vercel.app/" } ],
             afterlife: [{ n: "The Afterlife", u: "https://the-afterlife.vercel.app/" }],
-            abyssal: [
-                { n: "Abyssal Voyage", u: "https://abyssal-voyage-lemon.vercel.app/" },
-                { n: "Georgia Aquarium", u: "https://georgia-aquarium.vercel.app/" }
-            ],
-            tech: [
-                { n: "Google Workspace", u: "https://workspace.google.com" },
-                { n: "GitHub", u: "https://github.com" },
-                { n: "Vercel", u: "https://vercel.com" }
-            ],
-            hardware: [
-                { n: "eBay Computer Auctions", u: "https://www.ebay.com/b/Computers-Tablets-Network-Hardware/58058/bn_1865247" },
-                { n: "Memory Express", u: "https://www.memoryexpress.com" },
-                { n: "Canada Computers", u: "https://www.canadacomputers.com" },
-                { n: "Newegg", u: "https://www.newegg.ca" },
-                { n: "GovDeals Auctions", u: "https://www.govdeals.com" }
-            ],
-            mobile: [
-                { n: "Telus Mobility", u: "https://www.telus.com" },
-                { n: "Bell Canada", u: "https://www.bell.ca" },
-                { n: "Rogers Wireless", u: "https://www.rogers.com" },
-                { n: "Freedom Mobile", u: "https://www.freedommobile.ca" }
-            ],
-            apparel: [
-                { n: "Shein", u: "https://www.shein.com" },
-                { n: "Nike", u: "https://www.nike.com" },
-                { n: "Adidas", u: "https://www.adidas.ca" }
-            ],
-            shoes: [
-                { n: "Foot Locker", u: "https://www.footlocker.ca" },
-                { n: "StockX", u: "https://stockx.com" },
-                { n: "GOAT", u: "https://www.goat.com" }
-            ],
-            jewelry: [
-                { n: "Tiffany & Co.", u: "https://www.tiffany.ca" },
-                { n: "Cartier", u: "https://www.cartier.com" }
-            ],
-            watches: [
-                { n: "Chrono24", u: "https://www.chrono24.ca" },
-                { n: "Rolex", u: "https://www.rolex.com" }
-            ],
-            beauty: [
-                { n: "Sephora", u: "https://www.sephora.com" },
-                { n: "MAC Cosmetics", u: "https://www.maccosmetics.ca" }
-            ],
-            home: [
-                { n: "IKEA", u: "https://www.ikea.com" },
-                { n: "Wayfair", u: "https://www.wayfair.ca" }
-            ],
-            pets: [
-                { n: "Chewy", u: "https://www.chewy.com" },
-                { n: "PetSmart", u: "https://www.petsmart.ca" }
-            ],
-            leisure: [
-                { n: "Cineplex", u: "https://www.cineplex.com" },
-                { n: "West Edmonton Mall", u: "https://www.wem.ca" }
-            ],
-            travel: [
-                { n: "Atlas Obscura", u: "https://www.atlasobscura.com" },
-                { n: "Expedia", u: "https://www.expedia.ca" },
-                { n: "SpaceX", u: "https://www.spacex.com" }
-            ],
-            finance: [
-                { n: "BlockDAG Network", u: "https://blockdag.network" },
-                { n: "Binance", u: "https://www.binance.com" },
-                { n: "Wealthsimple", u: "https://www.wealthsimple.com" }
-            ],
-            entertainment: [
-                { n: "Netflix", u: "https://www.netflix.com" },
-                { n: "Twitch", u: "https://www.twitch.tv" },
-                { n: "GameStop", u: "https://www.gamestop.ca" }
-            ],
-            kids: [
-                { n: "PBS Kids", u: "https://pbskids.org" },
-                { n: "NatGeo: Rocks", u: "https://kids.nationalgeographic.com/science/article/rocks-and-minerals" },
-                { n: "Peppa Pig", u: "https://peppapig.com" }
-            ]
+            abyssal: [ { n: "Abyssal Voyage", u: "https://abyssal-voyage-lemon.vercel.app/" }, { n: "Georgia Aquarium", u: "https://georgia-aquarium.vercel.app/" } ],
+            tech: [ { n: "Google Workspace", u: "https://workspace.google.com" }, { n: "GitHub", u: "https://github.com" }, { n: "Vercel", u: "https://vercel.com" } ],
+            hardware: [ { n: "eBay Computer Auctions", u: "https://www.ebay.com/b/Computers-Tablets-Network-Hardware/58058/bn_1865247" }, { n: "Memory Express", u: "https://www.memoryexpress.com" }, { n: "Canada Computers", u: "https://www.canadacomputers.com" }, { n: "Newegg", u: "https://www.newegg.ca" }, { n: "GovDeals Auctions", u: "https://www.govdeals.com" } ],
+            mobile: [ { n: "Telus Mobility", u: "https://www.telus.com" }, { n: "Bell Canada", u: "https://www.bell.ca" }, { n: "Rogers Wireless", u: "https://www.rogers.com" }, { n: "Freedom Mobile", u: "https://www.freedommobile.ca" } ],
+            apparel: [ { n: "Shein", u: "https://www.shein.com" }, { n: "Nike", u: "https://www.nike.com" }, { n: "Adidas", u: "https://www.adidas.ca" } ],
+            shoes: [ { n: "Foot Locker", u: "https://www.footlocker.ca" }, { n: "StockX", u: "https://stockx.com" }, { n: "GOAT", u: "https://www.goat.com" } ],
+            jewelry: [ { n: "Tiffany & Co.", u: "https://www.tiffany.ca" }, { n: "Cartier", u: "https://www.cartier.com" } ],
+            watches: [ { n: "Chrono24", u: "https://www.chrono24.ca" }, { n: "Rolex", u: "https://www.rolex.com" } ],
+            beauty: [ { n: "Sephora", u: "https://www.sephora.com" }, { n: "MAC Cosmetics", u: "https://www.maccosmetics.ca" } ],
+            home_goods: [ { n: "IKEA", u: "https://www.ikea.com" }, { n: "Wayfair", u: "https://www.wayfair.ca" } ],
+            pets: [ { n: "Chewy", u: "https://www.chewy.com" }, { n: "PetSmart", u: "https://www.petsmart.ca" } ],
+            leisure: [ { n: "Cineplex", u: "https://www.cineplex.com" }, { n: "West Edmonton Mall", u: "https://www.wem.ca" } ],
+            travel: [ { n: "Atlas Obscura", u: "https://www.atlasobscura.com" }, { n: "Expedia", u: "https://www.expedia.ca" }, { n: "SpaceX", u: "https://www.spacex.com" } ],
+            finance: [ { n: "BlockDAG Network", u: "https://blockdag.network" }, { n: "Binance", u: "https://www.binance.com" }, { n: "Wealthsimple", u: "https://www.wealthsimple.com" } ],
+            entertainment: [ { n: "Netflix", u: "https://www.netflix.com" }, { n: "Twitch", u: "https://www.twitch.tv" }, { n: "GameStop", u: "https://www.gamestop.ca" } ],
+            kids: [ { n: "PBS Kids", u: "https://pbskids.org" }, { n: "NatGeo: Rocks", u: "https://kids.nationalgeographic.com/science/article/rocks-and-minerals" }, { n: "Peppa Pig", u: "https://peppapig.com" } ]
         };
 
         const carouselContainer = document.getElementById('category-carousel');
@@ -477,6 +428,7 @@
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
+            const terminal = document.getElementById('submission-terminal');
             
             // Sync Current Index
             currentCategoryIndex = categories.findIndex(c => c.id === id);
@@ -496,26 +448,41 @@
             
             setTimeout(() => {
                 grid.innerHTML = '';
-                const staticLinks = linkData[id] || [];
                 
-                staticLinks.forEach((item, index) => {
-                    const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
-                    grid.innerHTML += `
-                    <a href="${item.u}" target="_blank" class="hologram-card">
-                        <div class="particle-box">
-                            <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
+                // Logic for the new About Us Home Page
+                if (id === 'about_home') {
+                    terminal.style.display = 'none'; // Hide terminal on Home page
+                    grid.style.display = 'block'; // Ensure block display for the single iframe container
+                    grid.innerHTML = `
+                        <div class="holoframe-container">
+                            <iframe src="https://meet-the-gods.vercel.app" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" allow="autoplay; fullscreen;"></iframe>
                         </div>
-                        <div class="label-container">
-                            <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.n}</div>
-                            ${subtextHtml}
-                        </div>
-                    </a>`;
-                });
+                    `;
+                } else {
+                    terminal.style.display = 'block'; // Restore terminal for standard directories
+                    grid.style.display = 'grid'; // Restore grid display
+                    
+                    const staticLinks = linkData[id] || [];
+                    
+                    staticLinks.forEach((item, index) => {
+                        const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
+                        grid.innerHTML += `
+                        <a href="${item.u}" target="_blank" class="hologram-card">
+                            <div class="particle-box">
+                                <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
+                            </div>
+                            <div class="label-container">
+                                <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.n}</div>
+                                ${subtextHtml}
+                            </div>
+                        </a>`;
+                    });
 
-                staticLinks.forEach((item, index) => {
-                    const cv = document.getElementById(`canvas-${id}-${index}`);
-                    if (cv) initCardParticles(cv, item.n);
-                });
+                    staticLinks.forEach((item, index) => {
+                        const cv = document.getElementById(`canvas-${id}-${index}`);
+                        if (cv) initCardParticles(cv, item.n);
+                    });
+                }
 
                 grid.classList.remove('swipe-fade-out');
                 grid.classList.add('swipe-fade-in');
@@ -528,11 +495,14 @@
             const query = document.getElementById('mallSearch').value.toLowerCase();
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
+            const terminal = document.getElementById('submission-terminal');
             
             if(query.length > 0) {
                 indicator.innerHTML = `${olympusIconLarge} Global Search Override ${olympusIconLarge}`;
                 document.querySelectorAll('.carousel-btn').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
+                grid.style.display = 'grid';
+                terminal.style.display = 'block';
                 
                 const matches = [];
                 Object.values(linkData).flat().forEach(item => {
@@ -613,7 +583,7 @@
             document.getElementById('newLinkUrl').value = '';
         }
 
-        window.onload = () => showSection('core');
+        window.onload = () => showSection('about_home');
     </script>
 
     <script>
