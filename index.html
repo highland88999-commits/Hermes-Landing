@@ -35,6 +35,16 @@
 
         canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
 
+        /* UI Visibility Toggle Classes */
+        #ui-master, .swipe-indicator {
+            transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        body.ui-hidden #ui-master,
+        body.ui-hidden .swipe-indicator {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         .ui-master { position: fixed; inset: 0; opacity: 1; pointer-events: none; z-index: 3; display: flex; flex-direction: column; }
         
         .nav-header { padding: 20px 20px 10px 20px; display: flex; flex-direction: column; gap: 15px; z-index: 3000; background: linear-gradient(to bottom, rgba(0,0,0,0.95) 50%, rgba(0,0,0,0.8)); pointer-events: auto; }
@@ -126,6 +136,7 @@
         }
 
         .cyber-footer {
+            display: none; /* Made invisible as requested */
             position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; padding: 12px 0;
             background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(4px);
             border-top: 1px solid rgba(0, 255, 255, 0.15); z-index: 9999;
@@ -601,6 +612,24 @@
         }
 
         window.onload = () => showSection('about_home');
+
+        // --- GLOBAL UI TOGGLE LOGIC ---
+        document.addEventListener('click', (e) => {
+            const isHidden = document.body.classList.contains('ui-hidden');
+            
+            if (isHidden) {
+                // Restore the UI when clicked anywhere and it is currently hidden
+                document.body.classList.remove('ui-hidden');
+            } else {
+                // Find if the user clicked on an interactive element (button, card, input, etc.)
+                const interactive = e.target.closest('.carousel-btn, .hologram-card, .terminal-container, .holoframe-container, input, button, a');
+                
+                if (!interactive) {
+                    // Hide the UI when clicking empty space
+                    document.body.classList.add('ui-hidden');
+                }
+            }
+        });
     </script>
 
     <script>
