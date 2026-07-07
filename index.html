@@ -23,14 +23,17 @@
         body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background: var(--black-bloom); font-family: 'Segoe UI', sans-serif; color: #fff; box-sizing: border-box; overscroll-behavior: none; }
         *, *:before, *:after { box-sizing: inherit; }
 
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
-
-        /* Eye of Horus Background Overlay */
-        #eye-container {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 2; width: clamp(300px, 50vw, 600px); height: clamp(300px, 50vw, 600px); 
-            opacity: 0.15; pointer-events: none; filter: drop-shadow(0 0 30px var(--gold));
+        /* Semi-transparent Background Image Wrapping */
+        #bg-image-container {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
         }
+        #bg-image-container img {
+            width: 100%; height: 100%; object-fit: cover; 
+            opacity: 0.15; filter: grayscale(20%) contrast(120%);
+        }
+
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
 
         .ui-master { position: fixed; inset: 0; opacity: 1; pointer-events: none; z-index: 3; display: flex; flex-direction: column; }
         
@@ -58,7 +61,7 @@
 
         .icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 25px; width: 100%; max-width: 1500px; pointer-events: none; }
 
-        /* Glassmorphism Holoframe for the Home Route */
+        /* Glassmorphism Holoframe & Header Controls */
         .holoframe-container {
             width: 100%; height: 70vh; min-height: 550px; max-width: 1400px; margin: 0 auto;
             background: rgba(10, 10, 15, 0.65); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -67,7 +70,21 @@
             overflow: hidden; display: flex; flex-direction: column; pointer-events: auto;
             transition: var(--transition);
         }
-        .holoframe-container iframe { width: 100%; height: 100%; border: none; background: transparent; }
+        .holoframe-container.maximized {
+            position: fixed; inset: 0; width: 100vw; height: 100vh; max-width: 100vw;
+            z-index: 9999; border-radius: 0; border: none; margin: 0;
+        }
+        .holoframe-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.8); border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            color: var(--neon-cyan); font-size: 0.8rem; font-weight: bold; letter-spacing: 3px;
+        }
+        .holo-btn { 
+            cursor: pointer; border: 1px solid var(--neon-cyan); padding: 4px 12px; 
+            border-radius: 4px; color: var(--neon-cyan); transition: 0.3s; font-family: monospace;
+        }
+        .holo-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 10px var(--neon-cyan); }
+        .holoframe-container iframe { width: 100%; height: 100%; border: none; background: transparent; flex-grow: 1; }
 
         .hologram-card { background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(0,255,255,0.15); border-radius: 15px; text-decoration: none; overflow: hidden; transition: 0.4s; display: flex; flex-direction: column; pointer-events: auto; cursor: pointer; }
         .hologram-card:hover { transform: translateY(-8px); border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,255,255,0.4); }
@@ -129,20 +146,11 @@
 </head>
 <body>
 
-    <canvas id="galaxy-canvas"></canvas>
-
-    <div id="eye-container">
-        <svg viewBox="0 0 100 100" fill="none" stroke="url(#gradient)" stroke-width="2">
-            <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--gold)" />
-                    <stop offset="100%" style="stop-color:var(--silver)" />
-                </linearGradient>
-            </defs>
-            <path d="M20,50 Q50,20 80,50 T20,50 M50,50 A10,10 0 1,0 50,51 M50,40 L50,80 M50,80 Q70,90 80,70" />
-            <path d="M45,20 L35,50 L50,50 L40,80" stroke="var(--neon-cyan)" fill="none" stroke-width="2" style="filter: drop-shadow(0 0 5px var(--neon-cyan));" />
-        </svg>
+    <div id="bg-image-container">
+        <img src="media/IMG_1379.jpeg" alt="Olympus Multiverse Background">
     </div>
+
+    <canvas id="galaxy-canvas"></canvas>
 
     <div id="ui-master" class="ui-master">
         <header class="nav-header" id="nav-header">
@@ -424,11 +432,20 @@
             frame();
             window.addEventListener('resize', resize);
         }
+        
+        // Window function for Holoframe Maximizing
+        window.toggleHoloframe = function() {
+            const hf = document.querySelector('.holoframe-container');
+            const btn = document.getElementById('hf-max-btn');
+            if(hf) {
+                hf.classList.toggle('maximized');
+                btn.innerHTML = hf.classList.contains('maximized') ? '[_] MIN' : '[ ] MAX';
+            }
+        };
 
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
-            const terminal = document.getElementById('submission-terminal');
             
             // Sync Current Index
             currentCategoryIndex = categories.findIndex(c => c.id === id);
@@ -451,15 +468,17 @@
                 
                 // Logic for the new About Us Home Page
                 if (id === 'about_home') {
-                    terminal.style.display = 'none'; // Hide terminal on Home page
                     grid.style.display = 'block'; // Ensure block display for the single iframe container
                     grid.innerHTML = `
                         <div class="holoframe-container">
+                            <div class="holoframe-header">
+                                <span>MEET THE GODS</span>
+                                <div class="holo-btn" id="hf-max-btn" onclick="toggleHoloframe()">[ ] MAX</div>
+                            </div>
                             <iframe src="https://meet-the-gods.vercel.app" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" allow="autoplay; fullscreen;"></iframe>
                         </div>
                     `;
                 } else {
-                    terminal.style.display = 'block'; // Restore terminal for standard directories
                     grid.style.display = 'grid'; // Restore grid display
                     
                     const staticLinks = linkData[id] || [];
@@ -495,14 +514,12 @@
             const query = document.getElementById('mallSearch').value.toLowerCase();
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
-            const terminal = document.getElementById('submission-terminal');
             
             if(query.length > 0) {
                 indicator.innerHTML = `${olympusIconLarge} Global Search Override ${olympusIconLarge}`;
                 document.querySelectorAll('.carousel-btn').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
                 grid.style.display = 'grid';
-                terminal.style.display = 'block';
                 
                 const matches = [];
                 Object.values(linkData).flat().forEach(item => {
@@ -564,7 +581,7 @@
             }
         }
 
-        function processGateway(gateway) {
+        window.processGateway = function(gateway) {
             const nameInput = document.getElementById('newLinkName').value.trim();
             const urlInput = document.getElementById('newLinkUrl').value.trim();
             if (!nameInput || !urlInput) return alert("⚠️ MULTIVERSE ERROR: Designation and Protocol required.");
