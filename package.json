@@ -1,0 +1,16 @@
+{
+  "name": "hermes-landing",
+  "version": "1.0.0",
+  "description": "Olympus Multiverse Gateway and Webhook Infrastructure",
+  "main": "api/payment-webhook.js",
+  "scripts": {
+    "start": "node api/payment-webhook.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "stripe": "^14.14.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
