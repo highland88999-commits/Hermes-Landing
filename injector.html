@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLYMPUS | MULTIVERSE INJECTOR</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* INJECTOR COMPONENT STYLES */
+        :root {
+            --neon-cyan: #00ffff;
+            --neon-purple: #bc13fe;
+            --black-bloom: #050505;
+        }
+
+        /* Note: Body styles are just for isolated testing. 
+          When injected into the main page, it will inherit the main page's body.
+        */
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; }
+
+        .injector-drawer {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .injector-content {
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--neon-cyan);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            width: 95%;
+            max-height: 0; /* Hidden by default */
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.19, 1, 0.22, 1), padding 0.6s ease;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.15);
+            padding: 0 20px; /* 0 padding when closed to hide content fully */
+        }
+
+        .injector-content.open {
+            max-height: 500px; /* Expands down */
+            padding: 20px;
+        }
+
+        .terminal-header {
+            color: var(--neon-cyan);
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .input-matrix {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-matrix input, .cyber-select {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 15px;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-matrix input:focus, .cyber-select:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+        }
+
+        /* Style the select dropdown options */
+        .cyber-select option {
+            background: #000;
+            color: #fff;
+        }
+
+        .gateway-matrix {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cyber-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stripe-btn {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+            box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
+        }
+        .stripe-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px var(--neon-cyan); }
+
+        .crypto-btn {
+            background: transparent;
+            color: var(--neon-purple);
+            border: 1px solid var(--neon-purple);
+            box-shadow: inset 0 0 10px rgba(188,19,254,0.1);
+        }
+        .crypto-btn:hover { background: var(--neon-purple); color: #000; box-shadow: 0 0 20px var(--neon-purple); }
+
+        .drawer-toggle {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--neon-cyan);
+            border-top: none;
+            color: var(--neon-cyan);
+            padding: 8px 25px;
+            border-radius: 0 0 10px 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.15);
+        }
+
+        .drawer-toggle:hover { background: var(--neon-cyan); color: #000; }
+    </style>
+</head>
+<body>
+
+    <div id="injector-drawer" class="injector-drawer">
+        <div class="injector-content" id="injector-content">
+            <div class="terminal-header">ESTABLISH MULTIVERSE NODE [$2.00]</div>
+            
+            <div class="input-matrix">
+                <input type="text" id="nodeName" placeholder="PLATFORM DESIGNATION (e.g. eBay)" autocomplete="off">
+                <input type="url" id="nodeUrl" placeholder="SECURE PROTOCOL (HTTPS://...)" autocomplete="off">
+                <select id="nodeCategory" class="cyber-select">
+                    <option value="featured">Olympus Featured</option>
+                    <option value="core">Multiverse Core</option>
+                    <option value="tech">The Tech Stack</option>
+                    <option value="finance">Crypto & Fintech</option>
+                    <option value="apparel">Elite Apparel</option>
+                    <option value="shoes">Footwear & Kicks</option>
+                    <option value="jewelry">Jewelry Vault</option>
+                    <option value="watches">Horology & Watches</option>
+                    <option value="beauty">Health & Aesthetics</option>
+                    <option value="home_goods">Home & Habitat</option>
+                    <option value="pets">Pet Companions</option>
+                    <option value="leisure">Leisure & Attractions</option>
+                    <option value="food">Global Food Ops</option>
+                    <option value="travel">Global Atlas</option>
+                    <option value="entertainment">Media & Entertainment</option>
+                    <option value="kids">Kids Zone</option>
+                </select>
+            </div>
+
+            <div class="gateway-matrix">
+                <button class="cyber-btn stripe-btn" onclick="initiateUplink('stripe')">
+                    <i class="fa-brands fa-stripe-s"></i> STRIPE
+                </button>
+                <button class="cyber-btn crypto-btn" onclick="initiateUplink('crypto')">
+                    <i class="fa-brands fa-bitcoin"></i> CRYPTO
+                </button>
+            </div>
+        </div>
+        
+        <div class="drawer-toggle" onclick="toggleDrawer()">
+            INJECT NODE <i class="fa-solid fa-chevron-down" id="drawer-icon"></i>
+        </div>
+    </div>
+
+    <script>
+        // 1. SUPABASE CLIENT INITIALIZATION
+        // You MUST replace 'YOUR_ANON_PUBLIC_KEY' with your actual Supabase anon key.
+        const sbUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
+        const sbKey = 'YOUR_ANON_PUBLIC_KEY'; 
+        const supaClient = supabase.createClient(sbUrl, sbKey);
+
+        // 2. TOGGLE UI DRAWER
+        window.toggleDrawer = function() {
+            const content = document.getElementById('injector-content');
+            const icon = document.getElementById('drawer-icon');
+            
+            content.classList.toggle('open');
+            
+            if (content.classList.contains('open')) {
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        };
+
+        // 3. MAIN UPLINK AND PAYMENT LOGIC
+        window.initiateUplink = async function(gateway) {
+            const nameInput = document.getElementById('nodeName').value.trim();
+            const urlInput = document.getElementById('nodeUrl').value.trim();
+            const catInput = document.getElementById('nodeCategory').value;
+            
+            if (!nameInput || !urlInput) {
+                return alert("⚠️ MULTIVERSE ERROR: Designation and Protocol required.");
+            }
+            
+            try { 
+                new URL(urlInput); 
+            } catch (e) { 
+                return alert("⚠️ Invalid URL. Must include https://"); 
+            }
+
+            // Extract the base domain dynamically to enforce the monopoly rule
+            const rootDomain = new URL(urlInput).hostname.replace('www.', '');
+
+            // --- DATABASE DUPLICATE CHECK ---
+            try {
+                // Change UI state to show processing
+                document.body.style.cursor = 'wait';
+                
+                const { data, error } = await supaClient
+                    .from('links_directory')
+                    .select('id')
+                    .eq('root_domain', rootDomain);
+
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    document.body.style.cursor = 'default';
+                    return alert("⚠️ UPLINK REJECTED: Domain monopoly already established in the Multiverse.");
+                }
+            } catch (e) {
+                document.body.style.cursor = 'default';
+                return alert("⚠️ Database uplink failed. Ensure connection.");
+            }
+
+            document.body.style.cursor = 'default';
+
+            // --- GATEWAY ROUTING ---
+            if (gateway === 'stripe') {
+                const stripeBase = "https://buy.stripe.com/eVqaEWeI74KEddqbhgcIE03";
+                const eName = encodeURIComponent(nameInput);
+                const eUrl = encodeURIComponent(urlInput);
+                
+                // Stripe Custom Fields Mapping (0 = Name, 1 = Target URL)
+                window.open(`${stripeBase}?prefilled_custom_field_value[0]=${eName}&prefilled_custom_field_value[1]=${eUrl}`, '_blank');
+                
+            } else if (gateway === 'crypto') {
+                const cryptoBase = "https://nowpayments.io/payment/?iid=5516780859";
+                
+                // Package the metadata JSON for the NOWPayments webhook
+                const metadata = { title: nameInput, url: urlInput, category: catInput };
+                const packedData = encodeURIComponent(JSON.stringify(metadata));
+                
+                window.open(`${cryptoBase}&order_description=${packedData}`, '_blank');
+            }
+            
+            // Clean up inputs and retract the drawer upon successful handoff
+            document.getElementById('nodeName').value = '';
+            document.getElementById('nodeUrl').value = '';
+            toggleDrawer();
+        };
+    </script>
+</body>
+</html>
