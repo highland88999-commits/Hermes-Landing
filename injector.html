@@ -14,9 +14,6 @@
             --black-bloom: #050505;
         }
 
-        /* Note: Body styles are just for isolated testing. 
-          When injected into the main page, it will inherit the main page's body.
-        */
         body { margin: 0; font-family: 'Segoe UI', sans-serif; }
 
         .injector-drawer {
@@ -40,15 +37,15 @@
             border-top: none;
             border-radius: 0 0 12px 12px;
             width: 95%;
-            max-height: 0; /* Hidden by default */
+            max-height: 0;
             overflow: hidden;
             transition: max-height 0.6s cubic-bezier(0.19, 1, 0.22, 1), padding 0.6s ease;
             box-shadow: 0 10px 30px rgba(0, 255, 255, 0.15);
-            padding: 0 20px; /* 0 padding when closed to hide content fully */
+            padding: 0 20px;
         }
 
         .injector-content.open {
-            max-height: 500px; /* Expands down */
+            max-height: 500px;
             padding: 20px;
         }
 
@@ -89,7 +86,6 @@
             box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
         }
 
-        /* Style the select dropdown options */
         .cyber-select option {
             background: #000;
             color: #fff;
@@ -172,6 +168,9 @@
                     <option value="about_home">Home</option>
                     <option value="core">Multiverse Core</option>
                     <option value="featured">Olympus Featured</option>
+                    <option value="real_estate">Real Estate & Property</option>
+                    <option value="investment">Investment Portfolios</option>
+                    <option value="banking">Banking & Accounts</option>
                     <option value="renewed">A Renewed World</option>
                     <option value="adult_gaming">Adults & Gaming</option>
                     <option value="tcg">Trading Card Games</option>
@@ -221,10 +220,9 @@
     </div>
 
     <script>
-        // 1. SUPABASE CLIENT INITIALIZATION
-        // You MUST replace 'YOUR_ANON_PUBLIC_KEY' with your actual Supabase anon key.
+        // 1. SUPABASE CLIENT INITIALIZATION (Updated with correct key)
         const sbUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
-        const sbKey = 'YOUR_ANON_PUBLIC_KEY'; 
+        const sbKey = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZHFyZ2ppc21qcGh2bmpveWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MTg3ODQsImV4cCI6MjA5ODk5NDc4NH0.5dV9jMPU0zCCq5onCLFLaXqgyHE-CN4NllRwvv_GeqM'; 
         const supaClient = supabase.createClient(sbUrl, sbKey);
 
         // 2. TOGGLE UI DRAWER
@@ -257,12 +255,10 @@
                 return alert("⚠️ Invalid URL. Must include https://"); 
             }
 
-            // Extract the base domain dynamically to enforce the monopoly rule
             const rootDomain = new URL(urlInput).hostname.replace('www.', '');
 
             // --- DATABASE DUPLICATE CHECK ---
             try {
-                // Change UI state to show processing
                 document.body.style.cursor = 'wait';
                 
                 const { data, error } = await supaClient
@@ -289,20 +285,17 @@
                 const eName = encodeURIComponent(nameInput);
                 const eUrl = encodeURIComponent(urlInput);
                 
-                // Stripe Custom Fields Mapping (0 = Name, 1 = Target URL)
                 window.open(`${stripeBase}?prefilled_custom_field_value[0]=${eName}&prefilled_custom_field_value[1]=${eUrl}`, '_blank');
                 
             } else if (gateway === 'crypto') {
                 const cryptoBase = "https://nowpayments.io/payment/?iid=5516780859";
                 
-                // Package the metadata JSON for the NOWPayments webhook
                 const metadata = { title: nameInput, url: urlInput, category: catInput };
                 const packedData = encodeURIComponent(JSON.stringify(metadata));
                 
                 window.open(`${cryptoBase}&order_description=${packedData}`, '_blank');
             }
             
-            // Clean up inputs and retract the drawer upon successful handoff
             document.getElementById('nodeName').value = '';
             document.getElementById('nodeUrl').value = '';
             toggleDrawer();
