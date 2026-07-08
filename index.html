@@ -173,30 +173,24 @@
         /**
          * Multiverse Component Loader
          * Fetches the isolated injector.html file and fuses it directly to the top of the body.
-         * This allows the expandable tab to sit over the nav, regardless of which page is loaded.
          */
         async function loadInjectorModule() {
             try {
-                // Ensure 'injector.html' is in the same directory, or adjust path (e.g., 'components/injector.html')
                 const response = await fetch('injector.html');
                 const htmlText = await response.text();
                 
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlText, 'text/html');
                 
-                // 1. Mount the Styles
                 const styles = doc.querySelectorAll('style');
                 styles.forEach(style => document.head.appendChild(style));
 
-                // 2. Mount the HTML Drawer
                 const drawer = doc.getElementById('injector-drawer');
                 if(drawer) document.body.appendChild(drawer);
                 
-                // 3. Mount and Execute the Scripts
                 const scripts = doc.querySelectorAll('script');
                 scripts.forEach(oldScript => {
-                    // We must recreate the script element to force the browser to execute it
-                    if (!oldScript.src.includes('supabase')) { // Skip reloading supabase if already in main head
+                    if (!oldScript.src.includes('supabase')) { 
                         const newScript = document.createElement('script');
                         Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
                         newScript.appendChild(document.createTextNode(oldScript.innerHTML));
@@ -208,7 +202,6 @@
             }
         }
 
-        // Initialize the loader as soon as the main DOM is ready
         window.addEventListener('DOMContentLoaded', loadInjectorModule);
     </script>
 
@@ -274,6 +267,9 @@
             { id: "about_home", name: "Home" },
             { id: "core", name: "Multiverse Core" },
             { id: "featured", name: "Olympus Featured" },
+            { id: "real_estate", name: "Real Estate & Property" },
+            { id: "investment", name: "Investment Portfolios" },
+            { id: "banking", name: "Banking & Accounts" },
             { id: "renewed", name: "A Renewed World" },
             { id: "adult_gaming", name: "Adults & Gaming" },
             { id: "tcg", name: "Trading Card Games" },
@@ -375,6 +371,9 @@
             finance: [ { n: "BlockDAG Network", u: "https://blockdag.network" }, { n: "Binance", u: "https://www.binance.com" }, { n: "Wealthsimple", u: "https://www.wealthsimple.com" } ],
             entertainment: [ { n: "Netflix", u: "https://www.netflix.com" }, { n: "Twitch", u: "https://www.twitch.tv" }, { n: "GameStop", u: "https://www.gamestop.ca" } ],
             kids: [ { n: "PBS Kids", u: "https://pbskids.org" }, { n: "NatGeo: Rocks", u: "https://kids.nationalgeographic.com/science/article/rocks-and-minerals" }, { n: "Peppa Pig", u: "https://peppapig.com" } ],
+            real_estate: [],
+            investment: [],
+            banking: [],
             adult_gaming: [],
             tcg: [],
             spatial_web: [],
@@ -500,7 +499,7 @@
                 
                 // Logic for the new About Us Home Page
                 if (id === 'about_home') {
-                    grid.style.display = 'block'; // Ensure block display for the single iframe container
+                    grid.style.display = 'block'; 
                     grid.innerHTML = `
                         <div class="holoframe-container">
                             <div class="holoframe-header">
@@ -511,7 +510,7 @@
                         </div>
                     `;
                 } else {
-                    grid.style.display = 'grid'; // Restore grid display
+                    grid.style.display = 'grid'; 
                     
                     const staticLinks = linkData[id] || [];
                     
@@ -598,15 +597,13 @@
         }, {passive: true});
 
         function handleSwipe() {
-            const swipeThreshold = 60; // Minimum distance to register a swipe
+            const swipeThreshold = 60; 
             if (touchEndX < touchStartX - swipeThreshold) {
-                // Swiped Left -> Go to Next Category
                 let nextIndex = currentCategoryIndex + 1;
                 if (nextIndex >= categories.length) nextIndex = 0;
                 showSection(categories[nextIndex].id);
             }
             if (touchEndX > touchStartX + swipeThreshold) {
-                // Swiped Right -> Go to Previous Category
                 let prevIndex = currentCategoryIndex - 1;
                 if (prevIndex < 0) prevIndex = categories.length - 1;
                 showSection(categories[prevIndex].id);
@@ -622,7 +619,6 @@
             if (isHidden) {
                 document.body.classList.remove('ui-hidden');
             } else {
-                // Modified to prevent the UI from hiding when interacting with the new Injector Drawer
                 const interactive = e.target.closest('.carousel-btn, .hologram-card, .terminal-container, .holoframe-container, .injector-drawer, input, select, button, a');
                 
                 if (!interactive) {
