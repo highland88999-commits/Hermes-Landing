@@ -614,11 +614,6 @@
         const countKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
         const supabaseCounter = supabase.createClient(countUrl, countKey);
 
-        // CLIENT 2: Directory Approver
-        const dirUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
-        const dirKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZHFyZ2ppc21qcGh2bmpveWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MTg3ODQsImV4cCI6MjA5ODk5NDc4NH0.5dV9jMPU0zCCq5onCLFLaXqgyHE-CN4NllRwvv_GeqM';
-        const supabaseDir = supabase.createClient(dirUrl, dirKey);
-
         function getSafeVisitorId() {
             let id = localStorage.getItem('nexus_visitor_id');
             if (!id) {
@@ -665,32 +660,16 @@
             }
         }
 
-        // --- PAYMENT APPROVAL HOOK (Runs when Stripe redirects back) ---
-        async function verifyPaymentCompletion() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('success')) {
-                const pendingDomain = localStorage.getItem('pending_injection');
-                
-                if (pendingDomain) {
-                    const { error } = await supabaseDir
-                        .from('links_directory')
-                        .update({ payment_status: 'approved' })
-                        .eq('root_domain', pendingDomain);
-
-                    if (!error) {
-                        alert("✅ PAYMENT APPROVED: Node established in the Multiverse.");
-                        localStorage.removeItem('pending_injection'); // Clear memory
-                        
-                        // Clean the URL bar so they don't refresh and trigger it again
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
-                }
-            }
-        }
-
         window.addEventListener('load', () => {
             updateMultiverseCount(true);
-            verifyPaymentCompletion(); // Check for Stripe success URL on load
+            
+            // Check for Stripe success URL on load
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('success')) {
+                alert("✅ SECURE UPLINK: Payment received. Node injection is processing and will be live shortly.");
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            
             setInterval(() => updateMultiverseCount(false), 60000);
         });
     </script>
