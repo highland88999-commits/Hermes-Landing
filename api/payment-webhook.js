@@ -40,18 +40,18 @@ export default async function handler(req, res) {
                 const session = event.data.object;
                 const fields = session.custom_fields || [];
                 
-                // Extracting from Stripe Payment Link custom fields
-                const siteName = fields.find(f => f.label.custom === 'Platform Name')?.text?.value || "OLYMPUS NODE";
-                const siteUrl = fields.find(f => f.label.custom === 'Target URL')?.text?.value;
+                // Mapped precisely to your Stripe Dashboard configuration
+                const siteName = fields.find(f => f.label.custom === 'Platform Designation')?.text?.value || "OLYMPUS NODE";
+                const siteUrl = fields.find(f => f.label.custom === 'Secure Protocol')?.text?.value;
                 
-                if (!siteUrl) return res.status(400).json({ error: 'Missing Target URL' });
+                if (!siteUrl) return res.status(400).json({ error: 'Missing Secure Protocol URL' });
                 
                 newLink = { 
                     title: siteName.toUpperCase().substring(0, 25), 
-                    full_url: siteUrl, 
+                    url: siteUrl, 
                     root_domain: getRootDomain(siteUrl),
-                    category_id: "featured", // Default for Stripe links without dynamic dropdown mapping
-                    payment_status: true 
+                    category: "featured", // Default for Stripe links
+                    payment_status: 'approved' // Matches SQL schema
                 };
             } else { return res.status(200).json({ message: 'Ignored event' }); }
         } 
@@ -72,10 +72,10 @@ export default async function handler(req, res) {
 
                 newLink = { 
                     title: metadata.title.toUpperCase().substring(0, 25), 
-                    full_url: metadata.url, 
+                    url: metadata.url, 
                     root_domain: getRootDomain(metadata.url),
-                    category_id: metadata.category,
-                    payment_status: true 
+                    category: metadata.category,
+                    payment_status: 'approved' // Matches SQL schema
                 };
             } else { return res.status(200).json({ message: 'Ignored status' }); }
         } else { return res.status(400).json({ error: 'No signature found.' }); }
@@ -88,12 +88,14 @@ export default async function handler(req, res) {
     // --- SUPABASE INJECTION ---
     if (newLink && newLink.root_domain) {
         try {
-            const { error } = await supabase.from('links_directory').insert([newLink]);
+            // Upsert handles the logic: if the frontend already made it 'pending', this upgrades it to 'approved'.
+            // If the frontend failed or was bypassed, this injects the fresh 'approved' row.
+            const { error } = await supabase.from('links_directory').upsert(newLink, { onConflict: 'root_domain' });
             if (error) throw error;
-            return res.status(200).json({ success: true, message: 'Node injected.' });
+            return res.status(200).json({ success: true, message: 'Node successfully injected and approved.' });
         } catch (error) {
             console.error('❌ [DB INJECTION ERROR]', error);
-            return res.status(500).json({ error: 'Domain conflict or DB error.' });
+            return res.status(500).json({ error: 'Database upsert failed.' });
         }
     }
 }
