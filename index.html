@@ -23,7 +23,6 @@
         body, html { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background: var(--black-bloom); font-family: 'Segoe UI', sans-serif; color: #fff; box-sizing: border-box; overscroll-behavior: none; }
         *, *:before, *:after { box-sizing: inherit; }
 
-        /* Semi-transparent Background Image Wrapping */
         #bg-image-container {
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
             display: flex; align-items: center; justify-content: center;
@@ -35,7 +34,6 @@
 
         canvas { position: fixed; top: 0; left: 0; z-index: 1; display:block; touch-action:none; pointer-events: none; }
 
-        /* UI Visibility Toggle Classes */
         #ui-master, .swipe-indicator { transition: opacity 0.4s cubic-bezier(0.19, 1, 0.22, 1); }
         body.ui-hidden #ui-master,
         body.ui-hidden .swipe-indicator {
@@ -45,14 +43,12 @@
 
         .ui-master { position: fixed; inset: 0; opacity: 1; pointer-events: none; z-index: 3; display: flex; flex-direction: column; }
         
-        /* Nav pushed down slightly to make room for the collapsed Injector Tab */
         .nav-header { padding: 45px 20px 10px 20px; display: flex; flex-direction: column; gap: 15px; z-index: 3000; background: linear-gradient(to bottom, rgba(0,0,0,0.95) 50%, rgba(0,0,0,0.8)); pointer-events: auto; }
 
         .search-container { width: 100%; max-width: 600px; margin: 0 auto; }
         #mallSearch { width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); border: 1.5px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 30px; color: #fff; outline: none; box-shadow: var(--glow); font-size: 0.9rem; transition: 0.3s; }
         #mallSearch:focus { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(188, 19, 254, 0.5); }
 
-        /* Horizontal Carousel Navigation */
         .category-carousel { display: flex; gap: 12px; overflow-x: auto; padding: 5px 20px 15px 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-bottom: 1px solid rgba(0,255,255,0.1); background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); pointer-events: auto; }
         .category-carousel::-webkit-scrollbar { display: none; }
         
@@ -60,7 +56,6 @@
         .carousel-btn:hover { border-color: var(--neon-cyan); color: #fff; }
         .carousel-btn.active-link { background: rgba(0,255,255,0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: inset 0 0 10px rgba(0,255,255,0.2), 0 0 15px rgba(0,255,255,0.3); font-weight: bold; }
 
-        /* Global scrollable viewport */
         .viewport { flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 20px 100px; display: flex; flex-direction: column; align-items: center; cursor: crosshair; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; pointer-events: auto; }
         .viewport::-webkit-scrollbar { width: 6px; }
         .viewport::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); border-radius: 10px; }
@@ -70,7 +65,6 @@
 
         .icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 25px; width: 100%; max-width: 1500px; pointer-events: none; }
 
-        /* Glassmorphism Holoframe & Header Controls */
         .holoframe-container {
             width: 100%; height: 70vh; min-height: 550px; max-width: 1400px; margin: 0 auto;
             background: rgba(10, 10, 15, 0.65); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -105,7 +99,6 @@
         .label { color: #fff; font-size: 0.7rem; text-align: center; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .sub-label { color: var(--neon-cyan); font-size: 0.55rem; text-align: center; letter-spacing: 1px; opacity: 0.8; }
 
-        /* Swipe Indicator */
         .swipe-indicator {
             position: fixed; bottom: 55px; left: 50%; transform: translateX(-50%);
             color: var(--neon-cyan); font-size: 0.75rem; letter-spacing: 4px; font-weight: bold;
@@ -170,10 +163,6 @@
     </footer>
 
     <script>
-        /**
-         * Multiverse Component Loader
-         * Fetches the isolated injector.html file and fuses it directly to the top of the body.
-         */
         async function loadInjectorModule() {
             try {
                 const response = await fetch('injector.html');
@@ -201,7 +190,6 @@
                 console.error("⚠️ [SYSTEM WARNING] Failed to load the Multiverse Injector Component.", e);
             }
         }
-
         window.addEventListener('DOMContentLoaded', loadInjectorModule);
     </script>
 
@@ -388,7 +376,6 @@
 
         const carouselContainer = document.getElementById('category-carousel');
 
-        // Populate Carousel
         categories.forEach((cat, index) => {
             carouselContainer.innerHTML += `<button class="carousel-btn" id="btn-${cat.id}" onclick="showSection('${cat.id}')">${olympusIcon} ${cat.name}</button>`;
         });
@@ -464,7 +451,6 @@
             window.addEventListener('resize', resize);
         }
         
-        // Window function for Holoframe Maximizing
         window.toggleHoloframe = function() {
             const hf = document.querySelector('.holoframe-container');
             const btn = document.getElementById('hf-max-btn');
@@ -478,7 +464,6 @@
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
             
-            // Sync Current Index
             currentCategoryIndex = categories.findIndex(c => c.id === id);
 
             document.querySelectorAll('.carousel-btn').forEach(el => el.classList.remove('active-link'));
@@ -491,13 +476,11 @@
             const categoryName = categories[currentCategoryIndex]?.name || id;
             indicator.innerHTML = `${olympusIconLarge} ${categoryName} ${olympusIconLarge}`;
             
-            // Fade Out / Fade In Effect
             grid.classList.add('swipe-fade-out');
             
             setTimeout(() => {
                 grid.innerHTML = '';
                 
-                // Logic for the new About Us Home Page
                 if (id === 'about_home') {
                     grid.style.display = 'block'; 
                     grid.innerHTML = `
@@ -582,7 +565,6 @@
             }
         }
 
-        // --- SWIPE GESTURE LOGIC ---
         let touchStartX = 0;
         let touchEndX = 0;
         const viewport = document.getElementById('viewport');
@@ -612,15 +594,12 @@
 
         window.onload = () => showSection('about_home');
 
-        // --- GLOBAL UI TOGGLE LOGIC ---
         document.addEventListener('click', (e) => {
             const isHidden = document.body.classList.contains('ui-hidden');
-            
             if (isHidden) {
                 document.body.classList.remove('ui-hidden');
             } else {
                 const interactive = e.target.closest('.carousel-btn, .hologram-card, .terminal-container, .holoframe-container, .injector-drawer, input, select, button, a');
-                
                 if (!interactive) {
                     document.body.classList.add('ui-hidden');
                 }
@@ -629,9 +608,15 @@
     </script>
 
     <script>
-        const supabaseUrl = 'https://ezfwzqxwafvdjtwnmyrx.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        // CLIENT 1: Visit Counter
+        const countUrl = 'https://ezfwzqxwafvdjtwnmyrx.supabase.co';
+        const countKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
+        const supabaseCounter = supabase.createClient(countUrl, countKey);
+
+        // CLIENT 2: Directory Approver
+        const dirUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
+        const dirKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZHFyZ2ppc21qcGh2bmpveWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MTg3ODQsImV4cCI6MjA5ODk5NDc4NH0.5dV9jMPU0zCCq5onCLFLaXqgyHE-CN4NllRwvv_GeqM';
+        const supabaseDir = supabase.createClient(dirUrl, dirKey);
 
         function getSafeVisitorId() {
             let id = localStorage.getItem('nexus_visitor_id');
@@ -655,12 +640,12 @@
                 const visitorId = getSafeVisitorId();
 
                 if (isInitialLoad) {
-                    await supabaseClient.rpc('track_ping', { p_ip_hash: visitorId });
+                    await supabaseCounter.rpc('track_ping', { p_ip_hash: visitorId });
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
 
-                const { data: globalData } = await supabaseClient.from('global_stats').select('total_pings').single();
-                const { count: uniqueCount } = await supabaseClient.from('unique_visitors').select('*', { count: 'exact', head: true });
+                const { data: globalData } = await supabaseCounter.from('global_stats').select('total_pings').single();
+                const { count: uniqueCount } = await supabaseCounter.from('unique_visitors').select('*', { count: 'exact', head: true });
 
                 const total = globalData ? globalData.total_pings : 0;
                 const unique = uniqueCount !== null ? uniqueCount : 0;
@@ -679,8 +664,32 @@
             }
         }
 
+        // --- PAYMENT APPROVAL HOOK (Runs when Stripe redirects back) ---
+        async function verifyPaymentCompletion() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('success')) {
+                const pendingDomain = localStorage.getItem('pending_injection');
+                
+                if (pendingDomain) {
+                    const { error } = await supabaseDir
+                        .from('links_directory')
+                        .update({ payment_status: 'approved' })
+                        .eq('root_domain', pendingDomain);
+
+                    if (!error) {
+                        alert("✅ PAYMENT APPROVED: Node established in the Multiverse.");
+                        localStorage.removeItem('pending_injection'); // Clear memory
+                        
+                        // Clean the URL bar so they don't refresh and trigger it again
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                }
+            }
+        }
+
         window.addEventListener('load', () => {
             updateMultiverseCount(true);
+            verifyPaymentCompletion(); // Check for Stripe success URL on load
             setInterval(() => updateMultiverseCount(false), 60000);
         });
     </script>
