@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OLYMPUS | MULTIVERSE INJECTOR</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --neon-cyan: #00ffff;
@@ -219,11 +218,6 @@
     </div>
 
     <script>
-        // MISSING 'o' FIXED HERE
-        const sbUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
-        const sbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZHFyZ2ppc21qcGh2bmpveWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MTg3ODQsImV4cCI6MjA5ODk5NDc4NH0.5dV9jMPU0zCCq5onCLFLaXqgyHE-CN4NllRwvv_GeqM'; 
-        const supaClient = supabase.createClient(sbUrl, sbKey);
-
         window.toggleDrawer = function() {
             const content = document.getElementById('injector-content');
             const icon = document.getElementById('drawer-icon');
@@ -247,46 +241,36 @@
             
             try { new URL(urlInput); } catch (e) { return alert("⚠️ Invalid URL. Must include https://"); }
 
-            const rootDomain = new URL(urlInput).hostname.replace('www.', '');
-
-            // 1. Check for Duplicates
-            try {
-                document.body.style.cursor = 'wait';
-                const { data, error } = await supaClient.from('links_directory').select('id').eq('root_domain', rootDomain);
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    document.body.style.cursor = 'default';
-                    return alert("⚠️ UPLINK REJECTED: Domain monopoly already established.");
-                }
-            } catch (e) {
-                document.body.style.cursor = 'default';
-                // UNMASKED ERROR REVEAL
-                return alert("⚠️ ERROR: " + (e.message || JSON.stringify(e)));
-            }
-
-            // 2. Insert as 'pending'
-            const { error: insertError } = await supaClient.from('links_directory').insert([{ 
-                title: nameInput, url: urlInput, root_domain: rootDomain, category: catInput, payment_status: 'pending' 
-            }]);
-
-            if (insertError) {
-                document.body.style.cursor = 'default';
-                console.error("Insert Error:", insertError);
-                return alert("⚠️ ERROR: " + (insertError.message || JSON.stringify(insertError)));
-            }
-
-            document.body.style.cursor = 'default';
-
-            // 3. Save to Local Browser Memory
-            localStorage.setItem('pending_injection', rootDomain);
-
-            // 4. Gateway Routing
             if (gateway === 'stripe') {
-                const stripeBase = "https://buy.stripe.com/eVqaEWeI74KEddqbhgcIE03";
-                const eName = encodeURIComponent(nameInput);
-                const eUrl = encodeURIComponent(urlInput);
-                
-                window.location.href = `${stripeBase}?prefilled_custom_field_value[0]=${eName}&prefilled_custom_field_value[1]=${eUrl}`;
+                try {
+                    document.body.style.cursor = 'wait';
+                    
+                    // Route securely to the Vercel backend
+                    const response = await fetch('/api/create-checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: nameInput,
+                            url: urlInput,
+                            category: catInput
+                        })
+                    });
+
+                    const data = await response.json();
+                    document.body.style.cursor = 'default';
+
+                    // Handle backend rejections (duplicate domains, invalid data)
+                    if (!response.ok) {
+                        return alert("⚠️ " + (data.error || "Uplink rejected by server."));
+                    }
+
+                    // Teleport to the dynamic Stripe Checkout
+                    window.location.href = data.url;
+
+                } catch (err) {
+                    document.body.style.cursor = 'default';
+                    return alert("⚠️ ERROR: Backend server unreachable. " + err.message);
+                }
                 
             } else if (gateway === 'crypto') {
                 const cryptoBase = "https://nowpayments.io/payment/?iid=5516780859";
