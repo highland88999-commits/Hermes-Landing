@@ -143,13 +143,12 @@
         </header>
 
         <div class="category-carousel" id="category-carousel">
-            </div>
+        </div>
 
         <main class="viewport" id="viewport">
             <div class="cat-banner" id="cat-indicator"></div>
-            
             <div class="icon-grid" id="mallGrid"></div>
-            </main>
+        </main>
     </div>
 
     <div class="swipe-indicator">
@@ -165,7 +164,6 @@
     <script>
         async function loadInjectorModule() {
             try {
-                // CACHE BUSTER ADDED HERE
                 const response = await fetch('injector.html?v=' + new Date().getTime());
                 const htmlText = await response.text();
                 
@@ -293,88 +291,6 @@
 
         let currentCategoryIndex = 0;
 
-        const linkData = {
-            core: [
-                { n: "Valkyries of Olympus", u: "https://valkyries-of-olympus.vercel.app" },
-                { n: "Browser's Castle", u: "https://browsers-castle-x9hn.vercel.app" },
-                { n: "Fortress of Solitude", u: "https://fortress-of-solitude.vercel.app" },
-                { n: "Light Particle Engine", u: "https://light-particle-engine.vercel.app" },
-                { n: "Medusa's Lair", u: "https://medusas-lair.vercel.app" },
-                { n: "Loki Kappa Seven", u: "https://loki-kappa-seven.vercel.app" },
-                { n: "Persymphony", u: "https://persymphony.vercel.app" },
-                { n: "Vortex Generator Delta", u: "https://vortex-generator-delta.vercel.app" },
-                { n: "Vortex Generation Portal", u: "https://vortex-generation-portal.vercel.app" },
-                { n: "The Hive", u: "https://the-hive-vert.vercel.app" },
-                { n: "Beekeeper", u: "https://beekeeper-chi.vercel.app" },
-                { n: "Nexus Vortex", u: "https://nexus-vortex.vercel.app" },
-                { n: "Olympus Social", u: "https://olympus-social.vercel.app" },
-                { n: "NV-2 Video Library", u: "https://nv-2-video-library.vercel.app" },
-                { n: "Olympian Chess", u: "https://olympian-chess.vercel.app" },
-                { n: "Olympus Map Node", u: "https://olympus-map-node.vercel.app" },
-                { n: "Prometheus Iota", u: "https://prometheus-iota-livid.vercel.app" },
-                { n: "Olympus B2B", u: "https://olympus-b2-b.vercel.app/", s: "Enterprise & Development Solutions" },
-                { n: "Olympus Core", u: "https://nexusvortex.ca" },
-                { n: "Artemis OS", u: "https://artemis-os.vercel.app/" },
-                { n: "The Flying Dutchman", u: "https://the-flying-dutchman.vercel.app/" },
-                { n: "Nexus Symbiote", u: "https://nexus-symbiote.onrender.com/" }
-            ],
-            featured: [
-                { n: "Pan's Labyrinth", u: "https://pan-s-labrynth.vercel.app/" },
-                { n: "Raptor Rush", u: "https://raptor-rush.vercel.app/" },
-                { n: "REM-PSI Mauve", u: "https://rem-psi-mauve.vercel.app/" },
-                { n: "Olympus LAC", u: "https://olympus-lac.vercel.app/" },
-                { n: "Architect Artemis", u: "https://architect-artemis.vercel.app/" },
-                { n: "Hyperion Gravitas", u: "https://hyperion-gravitas.vercel.app/" },
-                { n: "Mega City Liard", u: "https://mega-city-liard.vercel.app/" },
-                { n: "Axiom Repository", u: "https://axiom-repository.vercel.app/" },
-                { n: "Grief Gully", u: "https://grief-gully.vercel.app/" },
-                { n: "Olympian Finances", u: "https://olympian-finances.vercel.app/" },
-                { n: "Magic Mirror Puce", u: "https://magic-mirror-puce.vercel.app/" },
-                { n: "The Glass Slipper", u: "https://the-glass-slipper.vercel.app/" },
-                { n: "Aethelgard Five", u: "https://aethelgard-five.vercel.app/" },
-                { n: "Hercules Nine", u: "https://hercules-nine.vercel.app/" },
-                { n: "Neon Racer Ecru", u: "https://neon-racer-ecru.vercel.app/" },
-                { n: "Colossus XI", u: "https://colossus-xi.vercel.app/" },
-                { n: "Zeus v Hades", u: "https://zeus-v-hades.vercel.app/" },
-                { n: "Merlin Mandates", u: "https://merlin-mandates.vercel.app/" },
-                { n: "Convergence Murex", u: "https://convergence-murex.vercel.app/" },
-                { n: "Artemis Hub", u: "https://artemis-hub.vercel.app/" }
-            ],
-            employment: [ { n: "Indeed Canada", u: "https://ca.indeed.com" }, { n: "ZipRecruiter", u: "https://www.ziprecruiter.com" } ],
-            food: [ { n: "Instacart", u: "https://shoppers.instacart.com/?referral=LAWS1AAFAA&utm_medium=copy&utm_source=instacart_referral&utm_campaign=supply_referral", s: "Use Referral: LAWS1AAFAA" }, { n: "SkipTheDishes", u: "https://www.skipthedishes.com" }, { n: "Uber Eats", u: "https://www.ubereats.com" } ],
-            renewed: [ { n: "Aetheris Business Model", u: "https://aetheris-business-model.vercel.app/" }, { n: "Olympus Aetheris", u: "https://olympus-aetheris.vercel.app/" } ],
-            afterlife: [{ n: "The Afterlife", u: "https://the-afterlife.vercel.app/" }],
-            abyssal: [ { n: "Abyssal Voyage", u: "https://abyssal-voyage-lemon.vercel.app/" }, { n: "Georgia Aquarium", u: "https://georgia-aquarium.vercel.app/" } ],
-            tech: [ { n: "Google Workspace", u: "https://workspace.google.com" }, { n: "GitHub", u: "https://github.com" }, { n: "Vercel", u: "https://vercel.com" } ],
-            hardware: [ { n: "eBay Computer Auctions", u: "https://www.ebay.com/b/Computers-Tablets-Network-Hardware/58058/bn_1865247" }, { n: "Memory Express", u: "https://www.memoryexpress.com" }, { n: "Canada Computers", u: "https://www.canadacomputers.com" }, { n: "Newegg", u: "https://www.newegg.ca" }, { n: "GovDeals Auctions", u: "https://www.govdeals.com" } ],
-            mobile: [ { n: "Telus Mobility", u: "https://www.telus.com" }, { n: "Bell Canada", u: "https://www.bell.ca" }, { n: "Rogers Wireless", u: "https://www.rogers.com" }, { n: "Freedom Mobile", u: "https://www.freedommobile.ca" } ],
-            apparel: [ { n: "Shein", u: "https://www.shein.com" }, { n: "Nike", u: "https://www.nike.com" }, { n: "Adidas", u: "https://www.adidas.ca" } ],
-            shoes: [ { n: "Foot Locker", u: "https://www.footlocker.ca" }, { n: "StockX", u: "https://stockx.com" }, { n: "GOAT", u: "https://www.goat.com" } ],
-            jewelry: [ { n: "Tiffany & Co.", u: "https://www.tiffany.ca" }, { n: "Cartier", u: "https://www.cartier.com" } ],
-            watches: [ { n: "Chrono24", u: "https://www.chrono24.ca" }, { n: "Rolex", u: "https://www.rolex.com" } ],
-            beauty: [ { n: "Sephora", u: "https://www.sephora.com" }, { n: "MAC Cosmetics", u: "https://www.maccosmetics.ca" } ],
-            home_goods: [ { n: "IKEA", u: "https://www.ikea.com" }, { n: "Wayfair", u: "https://www.wayfair.ca" } ],
-            pets: [ { n: "Chewy", u: "https://www.chewy.com" }, { n: "PetSmart", u: "https://www.petsmart.ca" } ],
-            leisure: [ { n: "Cineplex", u: "https://www.cineplex.com" }, { n: "West Edmonton Mall", u: "https://www.wem.ca" } ],
-            travel: [ { n: "Atlas Obscura", u: "https://www.atlasobscura.com" }, { n: "Expedia", u: "https://www.expedia.ca" }, { n: "SpaceX", u: "https://www.spacex.com" } ],
-            finance: [ { n: "BlockDAG Network", u: "https://blockdag.network" }, { n: "Binance", u: "https://www.binance.com" }, { n: "Wealthsimple", u: "https://www.wealthsimple.com" } ],
-            entertainment: [ { n: "Netflix", u: "https://www.netflix.com" }, { n: "Twitch", u: "https://www.twitch.tv" }, { n: "GameStop", u: "https://www.gamestop.ca" } ],
-            kids: [ { n: "PBS Kids", u: "https://pbskids.org" }, { n: "NatGeo: Rocks", u: "https://kids.nationalgeographic.com/science/article/rocks-and-minerals" }, { n: "Peppa Pig", u: "https://peppapig.com" } ],
-            real_estate: [],
-            investment: [],
-            banking: [],
-            adult_gaming: [],
-            tcg: [],
-            spatial_web: [],
-            web3: [],
-            motor_pool: [],
-            industrial: [],
-            logistics: [],
-            black_market: [],
-            audio_synth: [],
-            archives: []
-        };
-
         const carouselContainer = document.getElementById('category-carousel');
 
         categories.forEach((cat, index) => {
@@ -461,6 +377,16 @@
             }
         };
 
+        // CLIENT 1: Visit Counter
+        const countUrl = 'https://ezfwzqxwafvdjtwnmyrx.supabase.co';
+        const countKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
+        const supabaseCounter = supabase.createClient(countUrl, countKey);
+
+        // CLIENT 2: Directory Approver (Read-only for grid rendering)
+        const dirUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
+        const dirKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZHFyZ2ppc21qcGh2bmpveWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MTg3ODQsImV4cCI6MjA5ODk5NDc4NH0.5dV9jMPU0zCCq5onCLFLaXqgyHE-CN4NllRwvv_GeqM';
+        const supabaseDir = supabase.createClient(dirUrl, dirKey);
+
         async function showSection(id) {
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
@@ -479,7 +405,7 @@
             
             grid.classList.add('swipe-fade-out');
             
-            setTimeout(() => {
+            setTimeout(async () => {
                 grid.innerHTML = '';
                 
                 if (id === 'about_home') {
@@ -496,26 +422,38 @@
                 } else {
                     grid.style.display = 'grid'; 
                     
-                    const staticLinks = linkData[id] || [];
-                    
-                    staticLinks.forEach((item, index) => {
-                        const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
-                        grid.innerHTML += `
-                        <a href="${item.u}" target="_blank" class="hologram-card">
-                            <div class="particle-box">
-                                <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
-                            </div>
-                            <div class="label-container">
-                                <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.n}</div>
-                                ${subtextHtml}
-                            </div>
-                        </a>`;
-                    });
+                    // --- THE DYNAMIC DB FETCH ---
+                    const { data, error } = await supabaseDir
+                        .from('links_directory')
+                        .select('*')
+                        .eq('category', id)
+                        .eq('payment_status', 'approved');
 
-                    staticLinks.forEach((item, index) => {
-                        const cv = document.getElementById(`canvas-${id}-${index}`);
-                        if (cv) initCardParticles(cv, item.n);
-                    });
+                    if (error) {
+                        console.error("Directory sync error:", error);
+                    } else if (data && data.length > 0) {
+                        // Dynamically build the hologram cards using live database rows
+                        data.forEach((item, index) => {
+                            grid.innerHTML += `
+                            <a href="${item.url}" target="_blank" class="hologram-card">
+                                <div class="particle-box">
+                                    <canvas class="card-particle-canvas" id="canvas-${id}-${index}"></canvas>
+                                </div>
+                                <div class="label-container">
+                                    <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.title}</div>
+                                </div>
+                            </a>`;
+                        });
+
+                        // Spin up the particle canvas for each injected node
+                        data.forEach((item, index) => {
+                            const cv = document.getElementById(`canvas-${id}-${index}`);
+                            if (cv) initCardParticles(cv, item.title);
+                        });
+                    } else {
+                        // Empty State formatting
+                        grid.innerHTML = `<div style="text-align:center; color: var(--neon-purple); width: 100%; grid-column: 1 / -1; margin-top: 20px;">[ DIRECTORY EMPTY ]</div>`;
+                    }
                 }
 
                 grid.classList.remove('swipe-fade-out');
@@ -525,7 +463,7 @@
             }, 200);
         }
 
-        function searchMall() {
+        async function searchMall() {
             const query = document.getElementById('mallSearch').value.toLowerCase();
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
@@ -536,31 +474,33 @@
                 grid.innerHTML = '';
                 grid.style.display = 'grid';
                 
-                const matches = [];
-                Object.values(linkData).flat().forEach(item => {
-                    if(item.n.toLowerCase().includes(query)) {
-                        matches.push(item);
-                    }
-                });
+                // --- THE DYNAMIC DB SEARCH ---
+                const { data, error } = await supabaseDir
+                    .from('links_directory')
+                    .select('*')
+                    .ilike('title', `%${query}%`)
+                    .eq('payment_status', 'approved');
 
-                matches.forEach((item, index) => {
-                    const subtextHtml = item.s ? `<div class="sub-label">${item.s}</div>` : '';
-                    grid.innerHTML += `
-                    <a href="${item.u}" target="_blank" class="hologram-card">
-                        <div class="particle-box">
-                            <canvas class="card-particle-canvas" id="search-canvas-${index}"></canvas>
-                        </div>
-                        <div class="label-container">
-                            <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.n}</div>
-                            ${subtextHtml}
-                        </div>
-                    </a>`;
-                });
+                if (data && data.length > 0) {
+                    data.forEach((item, index) => {
+                        grid.innerHTML += `
+                        <a href="${item.url}" target="_blank" class="hologram-card">
+                            <div class="particle-box">
+                                <canvas class="card-particle-canvas" id="search-canvas-${index}"></canvas>
+                            </div>
+                            <div class="label-container">
+                                <div class="label">${olympusIcon.replace(/currentColor/g, 'var(--neon-cyan)')} ${item.title}</div>
+                            </div>
+                        </a>`;
+                    });
 
-                matches.forEach((item, index) => {
-                    const cv = document.getElementById(`search-canvas-${index}`);
-                    if (cv) initCardParticles(cv, item.n);
-                });
+                    data.forEach((item, index) => {
+                        const cv = document.getElementById(`search-canvas-${index}`);
+                        if (cv) initCardParticles(cv, item.title);
+                    });
+                } else {
+                     grid.innerHTML = `<div style="text-align:center; color: var(--neon-purple); width: 100%; grid-column: 1 / -1; margin-top: 20px;">[ NO NODES FOUND ]</div>`;
+                }
             } else {
                 showSection(categories[currentCategoryIndex].id);
             }
@@ -606,13 +546,6 @@
                 }
             }
         });
-    </script>
-
-    <script>
-        // CLIENT 1: Visit Counter
-        const countUrl = 'https://ezfwzqxwafvdjtwnmyrx.supabase.co';
-        const countKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
-        const supabaseCounter = supabase.createClient(countUrl, countKey);
 
         function getSafeVisitorId() {
             let id = localStorage.getItem('nexus_visitor_id');
@@ -663,7 +596,6 @@
         window.addEventListener('load', () => {
             updateMultiverseCount(true);
             
-            // Check for Stripe success URL on load
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('success')) {
                 alert("✅ SECURE UPLINK: Payment received. Node injection is processing and will be live shortly.");
