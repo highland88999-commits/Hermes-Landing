@@ -8,18 +8,25 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET;
 
+// Required for Stripe to verify the raw signature
 export const config = { api: { bodyParser: false } };
 
 async function getRawBody(req) {
     const chunks = [];
-    for await (const chunk of req) { chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk); }
+    for await (const chunk of req) { 
+        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk); 
+    }
     return Buffer.concat(chunks);
 }
 
 // Secure backend parser to prevent payload spoofing
 function getRootDomain(urlString) {
-    try { return new URL(urlString).hostname.replace('www.', ''); } 
-    catch (e) { return null; }
+    try { 
+        return new URL(urlString).hostname.replace('www.', ''); 
+    } 
+    catch (e) { 
+        return null; 
+    }
 }
 
 export default async function handler(req, res) {
@@ -38,22 +45,24 @@ export default async function handler(req, res) {
             
             if (event.type === 'checkout.session.completed') {
                 const session = event.data.object;
-                const fields = session.custom_fields || [];
                 
-                // Mapped precisely to your Stripe Dashboard configuration
-                const siteName = fields.find(f => f.label.custom === 'Platform Designation')?.text?.value || "OLYMPUS NODE";
-                const siteUrl = fields.find(f => f.label.custom === 'Secure Protocol')?.text?.value;
+                // Read directly from session.metadata (passed from create-checkout.js)
+                const metadata = session.metadata;
                 
-                if (!siteUrl) return res.status(400).json({ error: 'Missing Secure Protocol URL' });
+                if (!metadata || !metadata.url) {
+                    return res.status(400).json({ error: 'Missing Secure Protocol URL in metadata' });
+                }
                 
                 newLink = { 
-                    title: siteName.toUpperCase().substring(0, 25), 
-                    url: siteUrl, 
-                    root_domain: getRootDomain(siteUrl),
-                    category: "featured", // Default for Stripe links
-                    payment_status: 'approved' // Matches SQL schema
+                    title: metadata.title.toUpperCase().substring(0, 25), 
+                    url: metadata.url, 
+                    root_domain: metadata.root_domain || getRootDomain(metadata.url),
+                    category: metadata.category || "featured", 
+                    payment_status: 'approved' 
                 };
-            } else { return res.status(200).json({ message: 'Ignored event' }); }
+            } else { 
+                return res.status(200).json({ message: 'Ignored event' }); 
+            }
         } 
         // --- NOWPAYMENTS PARSING ---
         else if (nowpaymentsSig) {
@@ -75,10 +84,14 @@ export default async function handler(req, res) {
                     url: metadata.url, 
                     root_domain: getRootDomain(metadata.url),
                     category: metadata.category,
-                    payment_status: 'approved' // Matches SQL schema
+                    payment_status: 'approved' 
                 };
-            } else { return res.status(200).json({ message: 'Ignored status' }); }
-        } else { return res.status(400).json({ error: 'No signature found.' }); }
+            } else { 
+                return res.status(200).json({ message: 'Ignored status' }); 
+            }
+        } else { 
+            return res.status(400).json({ error: 'No signature found.' }); 
+        }
 
     } catch (err) {
         console.error('❌ [WEBHOOK ERROR]', err.message);
@@ -91,11 +104,15 @@ export default async function handler(req, res) {
             // Upsert handles the logic: if the frontend already made it 'pending', this upgrades it to 'approved'.
             // If the frontend failed or was bypassed, this injects the fresh 'approved' row.
             const { error } = await supabase.from('links_directory').upsert(newLink, { onConflict: 'root_domain' });
+            
             if (error) throw error;
+            
             return res.status(200).json({ success: true, message: 'Node successfully injected and approved.' });
         } catch (error) {
             console.error('❌ [DB INJECTION ERROR]', error);
             return res.status(500).json({ error: 'Database upsert failed.' });
         }
+    } else {
+        return res.status(400).json({ error: 'Failed to construct valid node data.' });
     }
 }
