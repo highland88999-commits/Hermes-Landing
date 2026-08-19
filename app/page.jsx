@@ -10,7 +10,6 @@ import { supabase } from '../lib/supabase';
 const GalaxyCanvas = dynamic(() => import('../components/GalaxyCanvas'), { ssr: false });
 
 export default function Home() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [links, setLinks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('ALL');
@@ -76,27 +75,14 @@ export default function Home() {
         <i className="fa-solid fa-angles-left"></i> SWIPE TO NAVIGATE <i className="fa-solid fa-angles-right"></i>
       </div>
 
-      <footer className="cyber-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 20px', pointerEvents: 'auto' }}>
+      <footer className="cyber-footer" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px 20px', pointerEvents: 'auto' }}>
         <div className="visit-count">
           SYSTEM UPLINK: <span style={{ color: '#00ff00' }}>STABLE</span>
         </div>
-        <button
-          onClick={() => setDrawerOpen(true)}
-          style={{
-            background: 'rgba(0,0,0,0.8)', border: '1px solid var(--neon-cyan)',
-            color: 'var(--neon-cyan)', padding: '8px 20px', borderRadius: '4px',
-            cursor: 'pointer', fontFamily: 'monospace', fontWeight: 'bold',
-            letterSpacing: '2px', transition: '0.3s'
-          }}
-          onMouseOver={(e) => { e.target.style.background = 'var(--neon-cyan)'; e.target.style.color = '#000'; }}
-          onMouseOut={(e) => { e.target.style.background = 'rgba(0,0,0,0.8)'; e.target.style.color = 'var(--neon-cyan)'; }}
-        >
-          [ INJECT NODE ]
-        </button>
       </footer>
 
-      {/* Injector Slide-Out Component */}
-      <InjectorDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      {/* Injector Slide-Out Component (Self-Managing) */}
+      <InjectorDrawer />
     </>
   );
 }
