@@ -2,13 +2,13 @@ import Stripe from 'stripe';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 
+// BACKEND USES THE SERVICE ROLE KEY, NOT THE PUBLISHABLE KEY
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET;
 
-// Required for Stripe to verify the raw signature
 export const config = { api: { bodyParser: false } };
 
 async function getRawBody(req) {
@@ -19,12 +19,10 @@ async function getRawBody(req) {
     return Buffer.concat(chunks);
 }
 
-// Secure backend parser to prevent payload spoofing
 function getRootDomain(urlString) {
     try { 
         return new URL(urlString).hostname.replace('www.', ''); 
-    } 
-    catch (e) { 
+    } catch (e) { 
         return null; 
     }
 }
@@ -39,14 +37,11 @@ export default async function handler(req, res) {
     let newLink = null;
 
     try {
-        // --- STRIPE PARSING ---
         if (stripeSig) {
             const event = stripe.webhooks.constructEvent(rawBody, stripeSig, STRIPE_WEBHOOK_SECRET);
             
             if (event.type === 'checkout.session.completed') {
                 const session = event.data.object;
-                
-                // Read directly from session.metadata (passed from create-checkout.js)
                 const metadata = session.metadata;
                 
                 if (!metadata || !metadata.url) {
@@ -64,7 +59,6 @@ export default async function handler(req, res) {
                 return res.status(200).json({ message: 'Ignored event' }); 
             }
         } 
-        // --- NOWPAYMENTS PARSING ---
         else if (nowpaymentsSig) {
             const payload = JSON.parse(rawBody.toString('utf8'));
             const sortedParams = JSON.stringify(payload, Object.keys(payload).sort());
@@ -98,11 +92,8 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: err.message });
     }
 
-    // --- SUPABASE INJECTION ---
     if (newLink && newLink.root_domain) {
         try {
-            // Upsert handles the logic: if the frontend already made it 'pending', this upgrades it to 'approved'.
-            // If the frontend failed or was bypassed, this injects the fresh 'approved' row.
             const { error } = await supabase.from('links_directory').upsert(newLink, { onConflict: 'root_domain' });
             
             if (error) throw error;
