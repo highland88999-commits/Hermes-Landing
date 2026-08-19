@@ -7,8 +7,7 @@
     
     <!-- Preconnect to critical domains for faster loading -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://bldqrgjismjphvjnjyhk.supabase.co">
-    <link rel="preconnect" href="https://ezfwzqxwafvdjtwnmyrx.supabase.co">
+    <link rel="preconnect" href="https://amulgdbdvxpikpmldyoq.supabase.co">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -89,29 +88,26 @@
         .swipe-fade-in { opacity: 1; transform: scale(1); transition: opacity 0.3s, transform 0.3s; }
     </style>
 
-    <!-- OMEGA MIND TELEMETRY UPLINK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- UNIFIED OMEGA MIND INITIALIZATION -->
     <script>
+      // Single database client for the entire application
+      const MASTER_DB_URL = 'https://amulgdbdvxpikpmldyoq.supabase.co';
+      const MASTER_DB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtdWxnZGJkdnhwaWtwbWxkeW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MDU3MzgsImV4cCI6MjEwMTk4MTczOH0.0eZ3SfWhUEzSLpDDKEE_3vp5siXF00akRp5jX1dM-dA';
+      
+      window.supabaseMaster = window.supabase.createClient(MASTER_DB_URL, MASTER_DB_KEY);
+      
       (function() {
-        const SUPABASE_URL = 'https://amulgdbdvxpikpmldyoq.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtdWxnZGJkdnhwaWtwbWxkeW9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MDU3MzgsImV4cCI6MjEwMTk4MTczOH0.0eZ3SfWhUEzSLpDDKEE_3vp5siXF00akRp5jX1dM-dA';
-        
-        // Auto-detect repository name or fallback to domain
-        const REPO_NAME = window.OMEGA_REPO_NAME || window.location.hostname || 'Unknown-Node';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        const REPO_NAME = window.OMEGA_REPO_NAME || window.location.hostname || 'Olympus-Master-Node';
         let clientIP = 'Detecting...';
 
-        // 1. Fetch Client IP
         fetch('https://api.ipify.org?format=json')
           .then(res => res.json())
           .then(data => { clientIP = data.ip; })
           .catch(() => { clientIP = 'IP_UNKNOWN'; });
 
-        // 2. Core Telemetry Logging Function
         window.logBrainAction = async function(actionType, details = {}) {
           try {
-            await supabase.from('central_telemetry').insert([{
+            await window.supabaseMaster.from('central_telemetry').insert([{
               repository_name: REPO_NAME,
               action_type: actionType,
               details: {
@@ -127,23 +123,20 @@
           }
         };
 
-        // 3. Register Node into Target Vector Dropdown
         async function registerNode() {
           try {
-            await supabase.from('connected_repos').upsert(
+            await window.supabaseMaster.from('connected_repos').upsert(
               { repo_name: REPO_NAME, status: 'active' },
               { onConflict: 'repo_name' }
             );
           } catch (e) {}
         }
 
-        // 4. Auto-Log Page Load
         window.addEventListener('load', () => {
           registerNode();
           window.logBrainAction('page_load', { title: document.title });
         });
 
-        // 5. Auto-Log User Interactions & Clicks
         document.addEventListener('click', (e) => {
           const target = e.target.closest('button, a, input[type="submit"], select');
           if (target) {
@@ -160,7 +153,6 @@
 </head>
 <body>
 
-    <!-- REPLACED: Video Layering with CSS Screen Blend -->
     <div id="bg-video-container">
         <video class="bg-video base-video" src="https://files.catbox.moe/gmgn0b.mp4" autoplay loop muted playsinline></video>
         <video class="bg-video blend-video" src="https://files.catbox.moe/vg5h14.mp4" autoplay loop muted playsinline></video>
@@ -241,9 +233,8 @@
         });
     </script>
 
-    <!-- CORE LOGIC & SUPABASE -->
+    <!-- CORE LOGIC -->
     <script>
-        // Data & Variables
         const olympusIcon = `
             <svg viewBox="0 0 100 100" width="16" height="16" style="flex-shrink: 0; filter: drop-shadow(0 0 3px var(--neon-cyan));">
                 <path d="M30,35 Q10,20 5,10 Q20,25 25,45 Z" fill="currentColor"/>
@@ -254,7 +245,6 @@
             
         const olympusIconLarge = olympusIcon.replace('width="16" height="16"', 'width="35" height="35"').replace(/currentColor/g, 'var(--neon-cyan)');
 
-        // EXPLICIT CATEGORY MATCHING (Formatted in Plain English)
         const categories = [
             { id: "about_home", name: "Home" },
             { id: "multiverse_core", name: "Multiverse Core" },
@@ -281,33 +271,21 @@
         ];
 
         let currentCategoryIndex = 0;
-        let activeAnimationFrames = []; // Track particle frames to prevent memory leaks
+        let activeAnimationFrames = [];
 
-        // Database Clients
-        const countUrl = 'https://ezfwzqxwafvdjtwnmyrx.supabase.co';
-        const countKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6Znd6cXh3YWZ2ZGp0d25teXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwOTA2NzIsImV4cCI6MjA5NzY2NjY3Mn0.baxnDWZ9rSZobzqnAOND7SuJpXbl4wmRyUYTQl4whPE';
-        const supabaseCounter = supabase.createClient(countUrl, countKey);
-
-        const dirUrl = 'https://bldqrgjismjphvjnjyhk.supabase.co';
-        const dirKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsZHFyZ2ppc21qcGh2bmpveWhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MTg3ODQsImV4cCI6MjA5ODk5NDc4NH0.5dV9jMPU0zCCq5onCLFLaXqgyHE-CN4NllRwvv_GeqM';
-        const supabaseDir = supabase.createClient(dirUrl, dirKey);
-
-        // UI Initialization
         const carouselContainer = document.getElementById('category-carousel');
         categories.forEach((cat) => {
             carouselContainer.innerHTML += `<button class="carousel-btn" id="btn-${cat.id}" onclick="showSection('${cat.id}')">${olympusIcon} ${cat.name}</button>`;
         });
 
-        // Search Debouncing Logic
         let searchTimeout;
         window.handleSearchInput = function() {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 searchMall();
-            }, 300); // Waits 300ms after user stops typing before calling Supabase
+            }, 300); 
         };
 
-        // UI Logic
         window.toggleHoloframe = function() {
             const hf = document.querySelector('.holoframe-container');
             const btn = document.getElementById('hf-max-btn');
@@ -387,14 +365,14 @@
                     ctx.shadowBlur = 0; 
                 }
                 animationFrameId = requestAnimationFrame(frame);
-                activeAnimationFrames.push(animationFrameId); // Store for cleanup
+                activeAnimationFrames.push(animationFrameId); 
             }
             frame();
             window.addEventListener('resize', resize);
         }
 
         async function showSection(id) {
-            clearActiveParticles(); // Prevent memory leak when switching sections
+            clearActiveParticles(); 
 
             const grid = document.getElementById('mallGrid');
             const indicator = document.getElementById('cat-indicator');
@@ -433,8 +411,8 @@
                     try {
                         console.log(`📡 Fetching nodes for category: ${id}`);
                         
-                        // Dynamically pull approved links, case-insensitive
-                        const { data, error } = await supabaseDir
+                        // USING UNIFIED MASTER CLIENT
+                        const { data, error } = await window.supabaseMaster
                             .from('links_directory')
                             .select('*')
                             .ilike('category', id) 
@@ -480,14 +458,15 @@
             const indicator = document.getElementById('cat-indicator');
             
             if(query.length > 0) {
-                clearActiveParticles(); // Clean up old frames
+                clearActiveParticles(); 
 
                 indicator.innerHTML = `${olympusIconLarge} Global Search Override ${olympusIconLarge}`;
                 document.querySelectorAll('.carousel-btn').forEach(el => el.classList.remove('active-link'));
                 grid.innerHTML = '';
                 grid.style.display = 'grid';
                 
-                const { data, error } = await supabaseDir
+                // USING UNIFIED MASTER CLIENT
+                const { data, error } = await window.supabaseMaster
                     .from('links_directory')
                     .select('*')
                     .ilike('title', `%${query}%`)
@@ -520,7 +499,6 @@
             }
         }
 
-        // Swiping Logic
         let touchStartX = 0;
         let touchEndX = 0;
         const viewport = document.getElementById('viewport');
@@ -545,7 +523,6 @@
             }
         }
 
-        // Injector Integration
         async function loadInjectorModule() {
             try {
                 const response = await fetch('injector.html?v=' + new Date().getTime());
@@ -574,7 +551,6 @@
             }
         }
 
-        // Analytics / Visit Counting
         function getSafeVisitorId() {
             let id = localStorage.getItem('nexus_visitor_id');
             if (!id) {
@@ -596,13 +572,14 @@
             try {
                 const visitorId = getSafeVisitorId();
 
+                // USING UNIFIED MASTER CLIENT
                 if (isInitialLoad) {
-                    await supabaseCounter.rpc('track_ping', { p_ip_hash: visitorId });
+                    await window.supabaseMaster.rpc('track_ping', { p_ip_hash: visitorId });
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
 
-                const { data: globalData } = await supabaseCounter.from('global_stats').select('total_pings').single();
-                const { count: uniqueCount } = await supabaseCounter.from('unique_visitors').select('*', { count: 'exact', head: true });
+                const { data: globalData } = await window.supabaseMaster.from('global_stats').select('total_pings').single();
+                const { count: uniqueCount } = await window.supabaseMaster.from('unique_visitors').select('*', { count: 'exact', head: true });
 
                 const total = globalData ? globalData.total_pings : 0;
                 const unique = uniqueCount !== null ? uniqueCount : 0;
@@ -621,7 +598,6 @@
             }
         }
 
-        // System Startup
         window.addEventListener('load', () => {
             loadInjectorModule();
             updateMultiverseCount(true);
@@ -636,7 +612,6 @@
             setInterval(() => updateMultiverseCount(false), 60000);
         });
 
-        // UI Idle Hiding
         document.addEventListener('click', (e) => {
             const isHidden = document.body.classList.contains('ui-hidden');
             if (isHidden) {
