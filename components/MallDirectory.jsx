@@ -1,4 +1,3 @@
-// components/MallDirectory.jsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -25,10 +24,10 @@ export default function MallDirectory() {
 
       if (error) throw error;
 
-      setLinks(data);
+      setLinks(data || []);
 
       // Extract unique categories for the carousel, prepending 'All'
-      const uniqueCategories = ['All', ...new Set(data.map(link => link.category))];
+      const uniqueCategories = ['All', ...new Set((data || []).map(link => link.category))];
       setCategories(uniqueCategories);
       
     } catch (err) {
@@ -62,7 +61,7 @@ export default function MallDirectory() {
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
-            {category.replace('_', ' ').toUpperCase()}
+            {category ? category.replace('_', ' ').toUpperCase() : 'UNKNOWN'}
           </button>
         ))}
       </div>
@@ -79,55 +78,16 @@ export default function MallDirectory() {
               className="flex flex-col p-6 bg-gray-900 border border-gray-800 rounded-xl hover:border-blue-500 hover:shadow-2xl transition-all duration-300 group"
             >
               <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400">
-                {linkHere is the service file to initialize the Supabase client and handle the data fetching for your mall UI. 
-
-You can create this as `supabaseClient.js` (or `src/lib/supabase.js` depending on your folder structure). It initializes the connection and provides a dedicated function to query the `links_directory` table based on the active category.
-
-### `supabaseClient.js`
-
-```javascript
-import { createClient } from '@supabase/supabase-js';
-
-// Access environment variables depending on your build tool (Next.js vs Vite)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables. Check your .env file.');
-}
-
-// Initialize the Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-/**
- * Fetches directory links for the mall UI based on the selected category.
- * 
- * @param {string} category - The active category string (e.g., 'apparel', 'electronics'). 
- *                            Pass 'all' or null to fetch the entire directory.
- * @returns {Promise<Array|null>} Array of link objects or null if an error occurs.
- */
-export async function fetchDirectoryLinks(category) {
-  try {
-    let query = supabase.from('links_directory').select('*');
-
-    // Filter by category if a specific one is provided
-    if (category && category.toLowerCase() !== 'all') {
-      query = query.eq('category', category);
-    }
-
-    // Sort the links (adjust 'created_at' to whatever column makes sense for your UI)
-    query = query.order('created_at', { ascending: false });
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Supabase error fetching links_directory:', error.message);
-      return null;
-    }
-
-    return data;
-  } catch (err) {
-    console.error('Unexpected error in fetchDirectoryLinks:', err);
-    return null;
-  }
+                {link.root_domain || link.url}
+              </h3>
+            </a>
+          ))
+        ) : (
+          <div className="col-span-full text-center text-gray-400">
+            No links found for this category.
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
