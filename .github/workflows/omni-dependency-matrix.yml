@@ -6,7 +6,7 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Allows manual trigger from Neon Shell
+  workflow_dispatch: # Allows manual trigger from the GitHub dashboard
 
 jobs:
   dependency_audit_and_install:
@@ -20,10 +20,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24.x'
-          cache: 'npm' # Added built-in caching for faster, more stable pipeline runs
+          # cache directive intentionally removed to bypass the package-lock.json requirement
 
       # Step 1: Universal Installer
-      # Intelligently detects if the repo uses npm, yarn, or has no package.json at all
       - name: 📦 Universal Dependency Resolution
         run: |
           echo "Scanning repository for dependency maps..."
@@ -43,24 +42,19 @@ jobs:
           fi
 
       # Step 2: The Deep File Scan
-      # Parses all .js, .jsx, .ts, files. Flags missing packages & unused bloat.
       - name: 🕵️ Deep Code Inspection (DepCheck)
         run: |
           echo "Initiating Deep AST Scan across all code files..."
           echo "Checking for modules required in code but missing from package.json..."
-          
-          # Run depcheck. The || true ensures the workflow doesn't completely crash 
-          # if it finds missing deps, allowing you to read the advice report.
+          # The || true ensures the workflow doesn't crash if missing deps are found
           npx depcheck --skip-missing=false || true
 
       # Step 3: Security Check
-      # Scans the installed dependency tree for known CVEs
       - name: 🛡️ Dependency Security Audit
         run: |
           echo "Scanning installed dependencies for security vulnerabilities..."
           npm audit --audit-level=high || true
 
       # Step 4: Safety Build Check
-      # Proves that the code actually compiles with the dependencies it has
       - name: 🛠️ Execute Build Integrity Check
         run: npm run build --if-present
