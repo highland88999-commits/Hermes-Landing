@@ -1,12 +1,12 @@
 import '../styles/globals.css';
 
-// This replaces the <Head> tags from the Pages router
+// App Router Metadata replacing Pages Router <Head>
 export const metadata = {
   title: 'Olympus | Nexus Vortex',
   description: 'The Grand Multiverse Directory for nexusvortex.ca',
 };
 
-// Controls the mobile viewport scaling for your canvas
+// Next.js 14+ Mobile Viewport Configuration
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -17,13 +17,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <head>
-        <link 
-          rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-        />
-      </head>
-      <body>
+      <body className="bg-[#050505] text-white selection:bg-cyan-500 selection:text-black antialiased">
         {children}
       </body>
     </html>
