@@ -1,17 +1,18 @@
 "use client";
 
 import React from 'react';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import SlidableDirectoryPages from '../components/SlidableDirectoryPages';
 import InjectorDrawer from '../components/InjectorDrawer';
 
-// Dynamically import the Three.js canvas to prevent Server-Side Rendering (SSR) errors
-const GalaxyCanvas = dynamic(() => import('../components/GalaxyCanvas'), { ssr: false });
+// Prevent Next.js from attempting static prerendering during 'next build'
+export const dynamic = 'force-dynamic';
+
+const GalaxyCanvas = dynamicImport(() => import('../components/GalaxyCanvas'), { ssr: false });
 
 export default function Home() {
   return (
     <main className="relative min-h-screen w-full bg-black text-white overflow-x-hidden">
-      
       {/* Multiverse Video Background Blend */}
       <div id="bg-video-container" className="fixed inset-0 pointer-events-none z-0">
         <video 
@@ -50,9 +51,8 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Injector Slide-Out Component (Self-Managing) */}
+      {/* Injector Slide-Out Component */}
       <InjectorDrawer />
-
     </main>
   );
 }
