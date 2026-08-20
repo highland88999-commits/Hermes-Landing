@@ -36,7 +36,7 @@ export default function Home() {
       <GalaxyCanvas />
 
       {/* Main Slidable Multiverse Interface */}
-      <div className="relative z-10 pt-10 pb-24">
+      <div className="relative z-[100] pt-32 pb-24 min-h-screen pointer-events-auto">
         <SlidableDirectoryPages />
       </div>
 
