@@ -32,7 +32,7 @@ export default function SlidableDirectoryPages() {
       setCategories(uniqueCategories);
       
     } catch (error) {
-      console.error("Error fetching multiverse nodes:", error);
+      console.error("Error fetching nodes:", error);
     } finally {
       setLoading(false);
     }
@@ -42,39 +42,46 @@ export default function SlidableDirectoryPages() {
     ? links 
     : links.filter(link => link.category === activeCategory);
 
-  const handleBackgroundClick = () => {
-    setUiVisible(!uiVisible);
-  };
+  const handleBackgroundClick = () => setUiVisible(!uiVisible);
+  const preventHide = (e) => e.stopPropagation();
 
-  const preventHide = (e) => {
-    e.stopPropagation();
+  // URL formatter to prevent relative Next.js 404 routing errors
+  const formatUrl = (url) => {
+    if (!url) return '#';
+    return url.startsWith('http') ? url : `https://${url}`;
   };
 
   return (
     <div 
-      className="relative z-20 w-full min-h-screen flex flex-col items-center pt-32 pb-24 px-4 cursor-crosshair overflow-y-auto"
+      className="relative cursor-crosshair overflow-y-auto"
       onClick={handleBackgroundClick}
+      style={{ zIndex: 50, width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '128px', paddingBottom: '96px', paddingLeft: '16px', paddingRight: '16px' }} 
     >
-      {/* Main UI Wrapper with Visibility Transition */}
       <div 
-        className={`w-full max-w-2xl flex flex-col items-center transition-opacity duration-500 ${uiVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: '100%', maxWidth: '672px', display: 'flex', flexDirection: 'column', alignItems: 'center',
+          opacity: uiVisible ? 1 : 0, 
+          pointerEvents: uiVisible ? 'auto' : 'none',
+          transition: 'opacity 0.4s ease-in-out'
+        }} 
       >
         
-        {/* Horizontal Category Scroller */}
+        {/* Horizontal Categories */}
         {categories.length > 1 && (
           <div 
-            className="w-full max-w-xl mb-6 overflow-x-auto flex gap-3 pb-2 scrollbar-hide border-b border-cyan-500/20 px-2"
             onClick={preventHide}
+            style={{ width: '100%', maxWidth: '576px', display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '24px' }}
           >
             {categories.map((cat, idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveCategory(cat)}
-                className={`shrink-0 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 border ${
-                  activeCategory === cat 
-                    ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400 shadow-[0_0_15px_rgba(0,255,255,0.3)]' 
-                    : 'bg-black/60 border-cyan-500/20 text-gray-400 hover:border-cyan-400 hover:text-white'
-                }`}
+                style={{
+                  flexShrink: 0, padding: '8px 20px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px', cursor: 'pointer',
+                  backgroundColor: activeCategory === cat ? 'rgba(0,255,255,0.15)' : 'rgba(0,0,0,0.6)',
+                  color: activeCategory === cat ? '#00ffff' : '#aaaaaa',
+                  border: activeCategory === cat ? '1px solid #00ffff' : '1px solid rgba(0,255,255,0.2)',
+                }}
               >
                 {cat}
               </button>
@@ -82,42 +89,41 @@ export default function SlidableDirectoryPages() {
           </div>
         )}
 
-        {/* Vertical Stacked Cards List */}
+        {/* Vertical Cards */}
         <div 
-          className="flex flex-col gap-4 w-full"
           onClick={preventHide}
+          style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', paddingBottom: '100px' }}
         >
           {loading ? (
-            <div className="text-center text-cyan-400 tracking-widest text-xs animate-pulse py-12">
+            <div style={{ textAlign: 'center', color: '#00ffff', padding: '40px', letterSpacing: '2px', fontSize: '12px' }}>
               INITIALIZING MULTIVERSE NODES...
             </div>
           ) : activeLinks.length > 0 ? (
             activeLinks.map((node) => (
               <a
                 key={node.id}
-                href={node.url}
+                href={formatUrl(node.url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block w-full bg-black/70 backdrop-blur-md border border-cyan-500/30 rounded-xl p-5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400 hover:shadow-[0_0_25px_rgba(0,255,255,0.4)]"
+                style={{
+                  display: 'block', position: 'relative', width: '100%', backgroundColor: 'rgba(5, 5, 5, 0.85)', backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(0, 255, 255, 0.3)', borderRadius: '12px', padding: '20px', textDecoration: 'none',
+                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.5)', transition: 'all 0.3s ease', overflow: 'hidden'
+                }}
               >
-                {/* Cyberpunk Accent Strip */}
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-cyan-400 to-purple-600 opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', background: 'linear-gradient(to bottom, #00ffff, #bc13fe)', opacity: 0.8 }}></div>
                 
-                <h3 className="text-sm font-bold text-white tracking-wider uppercase mb-1 group-hover:text-cyan-300 transition-colors">
+                <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: '#ffffff', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '2px' }}>
                   {node.title || node.platform_name || 'Untitled Node'}
                 </h3>
                 
-                <p className="text-[11px] text-gray-400 font-mono truncate">
+                <p style={{ fontSize: '11px', color: '#888888', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {node.url}
                 </p>
-                
-                <div className="absolute right-5 top-1/2 -translate-y-1/2 text-cyan-500/50 group-hover:text-cyan-400 transition-colors text-xs">
-                  <i className="fas fa-external-link-alt"></i>
-                </div>
               </a>
             ))
           ) : (
-            <div className="text-center text-gray-500 tracking-widest text-xs py-12 border border-dashed border-cyan-500/20 rounded-xl bg-black/40">
+            <div style={{ textAlign: 'center', color: '#666666', padding: '40px', border: '1px dashed rgba(0,255,255,0.2)', borderRadius: '12px', fontSize: '12px', letterSpacing: '2px' }}>
               NO ACTIVE NODES FOUND IN {activeCategory.toUpperCase()}
             </div>
           )}
